@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Expenses — Finance Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}</style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900 pb-28">
+  <div class="p-4">
+    <header class="flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-semibold">Expenses</h2>
+        <p class="text-sm text-slate-500">Add and manage your expenses</p>
+      </div>
+      <div>
+        <a href="dashboard.html" class="px-3 py-2 bg-white rounded shadow">Back</a>
+      </div>
+    </header>
+
+    <div class="mt-4 bg-white rounded-2xl p-4 shadow">
+      <!-- tabs -->
+      <div class="flex gap-2">
+        <button id="tabAdd" class="tab-btn px-3 py-2 bg-amber-500 text-white rounded">Add Expense</button>
+        <button id="tabView" class="tab-btn px-3 py-2 bg-slate-100 rounded">View Expenses</button>
+      </div>
+
+      <!-- Add Expense -->
+      <div id="addPane" class="mt-4">
+        <form id="expenseForm" class="space-y-3">
+          <div>
+            <label class="text-sm text-slate-600">Expense Number</label>
+            <input id="expNumber" readonly class="w-full mt-1 p-3 rounded bg-slate-50 border" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-sm">Date</label>
+              <input id="expDate" type="date" class="w-full mt-1 p-3 rounded border" required />
+            </div>
+            <div>
+              <label class="text-sm">Amount (₹)</label>
+              <input id="expAmount" type="number" class="w-full mt-1 p-3 rounded border" required />
+            </div>
+          </div>
+          <div>
+            <label class="text-sm">Purpose</label>
+            <input id="expPurpose" class="w-full mt-1 p-3 rounded border" placeholder="e.g., Groceries" />
+          </div>
+          <div>
+            <label class="text-sm">Name</label>
+            <input id="expName" list="namesList" class="w-full mt-1 p-3 rounded border" placeholder="Select or type a name" />
+            <datalist id="namesList"></datalist>
+          </div>
+          <div>
+            <label class="text-sm">Phone</label>
+            <input id="expPhone" class="w-full mt-1 p-3 rounded border" placeholder="Phone number (optional)" />
+          </div>
+
+          <div class="flex gap-2">
+            <button class="px-4 py-2 bg-amber-500 text-white rounded">Save Expense</button>
+            <button id="expClear" type="button" class="px-4 py-2 bg-slate-100 rounded">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- View Expenses -->
+      <div id="viewPane" class="mt-4 hidden">
+        <div class="flex items-center justify-between">
+          <div id="totalExpenses" class="font-semibold">Total Expenses: ₹ 0</div>
+          <div class="flex gap-2">
+            <input id="expSearch" placeholder="Search name, purpose, date, amount" class="p-2 border rounded" />
+            <select id="expFilter" class="p-2 border rounded">
+              <option value="">Filter by Name</option>
+            </select>
+            <button id="downloadExpCsv" class="px-3 py-2 bg-slate-800 text-white rounded">CSV</button>
+            <button id="downloadExpPdf" class="px-3 py-2 bg-slate-800 text-white rounded">PDF</button>
+          </div>
+        </div>
+
+        <div id="expensesList" class="mt-3 space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+    <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
+      <div class="bg-white p-2 rounded-full shadow text-xs">
+        © copyright basith paravoor
+        <a class="text-amber-500 ml-1" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">Contact</a>
+      </div>
+    </footer>
+  <!-- Bottom nav -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
+      <div class="flex justify-around p-2">
+        <a href="dashboard.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Dashboard</div>
+        </a>
+        <a href="incomes.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Incomes</div>
+        </a>
+        <a href="viewbyname.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">By Name</div>
+        </a>
+        <a href="settings.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Settings</div>
+        </a>
+      </div>
+    </nav>
+
+  <script src="app.js"></script>
+  <script>
+    if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
+
+    // tabs
+    const tabAdd = document.getElementById('tabAdd'), tabView = document.getElementById('tabView');
+    const addPane = document.getElementById('addPane'), viewPane = document.getElementById('viewPane');
+    tabAdd.addEventListener('click', ()=> { tabAdd.classList.add('bg-amber-500','text-white'); tabView.classList.remove('bg-amber-500','text-white'); addPane.classList.remove('hidden'); viewPane.classList.add('hidden'); });
+    tabView.addEventListener('click', ()=> { tabView.classList.add('bg-amber-500','text-white'); tabAdd.classList.remove('bg-amber-500','text-white'); viewPane.classList.remove('hidden'); addPane.classList.add('hidden'); loadExpenses(); });
+
+    // helpers
+    function genNext(listKey){ const arr = JSON.parse(localStorage.getItem(listKey)||'[]'); return arr.length+1; }
+    function saveContactIfNeeded(name, phone){
+      if(!name) return;
+      let contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
+      const existing = contacts.find(c=> c.name === name);
+      if(existing){
+        if(phone && phone !== existing.phone){ existing.phone = phone; localStorage.setItem('tfm_contacts', JSON.stringify(contacts)); }
+      }else{
+        contacts.push({name:name, phone: phone||''});
+        localStorage.setItem('tfm_contacts', JSON.stringify(contacts));
+      }
+    }
+
+    // initial values
+    document.getElementById('expNumber').value = '#'+ genNext('tfm_expenses');
+
+    // populate datalist
+    function refreshNamesDatalist(){
+      const d = document.getElementById('namesList'); d.innerHTML = '';
+      const contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
+      const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
+      const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
+      const names = new Set();
+      contacts.forEach(c=> names.add(c.name));
+      incomes.forEach(i=> names.add(i.name));
+      expenses.forEach(e=> names.add(e.name));
+      Array.from(names).forEach(n=> {
+        const opt = document.createElement('option'); opt.value = n; d.appendChild(opt);
+      });
+      // filter dropdown (view)
+      const filter = document.getElementById('expFilter'); const prev = filter.value;
+      filter.innerHTML = '<option value="">Filter by Name</option>';
+      Array.from(names).forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; filter.appendChild(o); });
+      filter.value = prev || '';
+    }
+
+    refreshNamesDatalist();
+
+    // when name typed, auto fill phone if present
+    document.getElementById('expName').addEventListener('input', function(){
+      const val = this.value.trim();
+      const contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
+      const found = contacts.find(c=> c.name === val);
+      if(found) document.getElementById('expPhone').value = found.phone || '';
+    });
+
+    // save expense
+    document.getElementById('expenseForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
+      const item = {
+        id: expenses.length + 1,
+        date: document.getElementById('expDate').value,
+        purpose: document.getElementById('expPurpose').value,
+        name: document.getElementById('expName').value.trim(),
+        phone: document.getElementById('expPhone').value.trim(),
+        amount: Number(document.getElementById('expAmount').value) || 0,
+        createdAt: new Date().toISOString()
+      };
+      expenses.push(item);
+      localStorage.setItem('tfm_expenses', JSON.stringify(expenses));
+      saveContactIfNeeded(item.name, item.phone);
+      // reset
+      this.reset();
+      document.getElementById('expNumber').value = '#'+ (expenses.length + 1);
+      refreshNamesDatalist();
+      alert('Expense saved');
+    });
+
+    document.getElementById('expClear').addEventListener('click', ()=> document.getElementById('expenseForm').reset());
+
+    // View expenses
+    function loadExpenses(){
+      const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]').slice().reverse();
+      const out = document.getElementById('expensesList');
+      out.innerHTML = '';
+      const total = expenses.reduce((s,e)=> s + Number(e.amount||0), 0);
+      document.getElementById('totalExpenses').textContent = 'Total Expenses: ₹ ' + total.toLocaleString();
+      const searchVal = (document.getElementById('expSearch').value || '').toLowerCase();
+      const filterName = document.getElementById('expFilter').value;
+      expenses.forEach(e => {
+        if(filterName && e.name !== filterName) return;
+        if(searchVal){
+          const hay = (e.name + ' ' + (e.purpose||'') + ' ' + (e.date||'') + ' ' + (e.amount||'')).toLowerCase();
+          if(!hay.includes(searchVal)) return;
+        }
+        const el = document.createElement('div');
+        el.className = 'p-3 border rounded flex justify-between items-start bg-slate-50';
+        el.innerHTML = `<div>
+            <div class="font-semibold">${e.name || '—'} <span class="text-xs text-slate-400">#${e.id}</span></div>
+            <div class="text-sm text-slate-500">${e.purpose || ''}</div>
+            <div class="text-xs text-slate-400 mt-1">${e.date || ''} • ${e.phone || ''}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold">₹ ${Number(e.amount||0).toLocaleString()}</div>
+            <div class="flex gap-2 mt-2">
+              <button data-id="${e.id}" class="editExp px-2 py-1 bg-white rounded border text-xs">Edit</button>
+              <button data-id="${e.id}" class="delExp px-2 py-1 bg-red-500 text-white rounded text-xs">Delete</button>
+            </div>
+          </div>`;
+        out.appendChild(el);
+      });
+      // attach events
+      document.querySelectorAll('.delExp').forEach(b => b.addEventListener('click', (ev)=>{
+        const id = Number(ev.target.dataset.id);
+        if(!confirm('Delete this expense?')) return;
+        let arr = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
+        arr = arr.filter(x=> x.id !== id).map((it, idx)=> ({...it, id: idx+1}));
+        localStorage.setItem('tfm_expenses', JSON.stringify(arr));
+        refreshNamesDatalist(); loadExpenses();
+      }));
+      document.querySelectorAll('.editExp').forEach(b => b.addEventListener('click', (ev)=>{
+        const id = Number(ev.target.dataset.id);
+        const arr = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
+        const item = arr.find(x=> x.id === id);
+        if(!item) return alert('Not found');
+        // fill form and switch to Add tab
+        tabAdd.click();
+        document.getElementById('expNumber').value = '#'+ item.id;
+        document.getElementById('expDate').value = item.date;
+        document.getElementById('expPurpose').value = item.purpose;
+        document.getElementById('expName').value = item.name;
+        document.getElementById('expPhone').value = item.phone;
+        document.getElementById('expAmount').value = item.amount;
+        // remove original item and update on save (we'll implement by deleting and on save it will append; to preserve id sequence we can override save behavior)
+        arr.splice(arr.findIndex(x=> x.id===id),1);
+        localStorage.setItem('tfm_expenses', JSON.stringify(arr.map((it,idx)=> ({...it, id: idx+1}))));
+      }));
+    }
+
+    document.getElementById('expSearch').addEventListener('input', loadExpenses);
+    document.getElementById('expFilter').addEventListener('change', loadExpenses);
+
+    document.getElementById('downloadExpCsv').addEventListener('click', ()=>{
+      const arr = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
+      if(arr.length === 0){ alert('No data'); return; }
+      const header = ['id','date','purpose','name','phone','amount','createdAt'];
+      const csv = [header.join(',')].concat(arr.map(r=> header.map(h=> `"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'expenses.csv'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('downloadExpPdf').addEventListener('click', ()=>{
+      // simple PDF table generation using jsPDF (in app.js we import it)
+      exportListAsPDF('tfm_expenses', 'expenses.pdf');
+    });
+
+    // kick
+    refreshNamesDatalist();
+    if(viewPane.classList.contains('hidden')){} else loadExpenses();
+  </script>
+</body>
+</html>

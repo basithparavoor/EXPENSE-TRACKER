@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thajudheen — Finance Manager (Login)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}</style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <div class="bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-6 sm:p-8">
+        <h1 class="text-2xl font-semibold">Thajudheen — Personal Finance</h1>
+        <p class="text-slate-300 mt-2">Securely manage incomes, expenses and contacts — stored locally on your device.</p>
+
+        <form id="loginForm" class="mt-6 space-y-4">
+          <div>
+            <label class="text-sm text-slate-300">Username</label>
+            <input id="username" autocomplete="username" class="w-full mt-1 p-3 rounded-lg bg-slate-900 border border-slate-700 focus:outline-none" placeholder="Phone or username" required />
+          </div>
+          <div>
+            <label class="text-sm text-slate-300">Password</label>
+            <input id="password" autocomplete="current-password" type="password" class="w-full mt-1 p-3 rounded-lg bg-slate-900 border border-slate-700 focus:outline-none" placeholder="••••••••" required />
+          </div>
+          <div id="loginError" class="hidden text-red-400 text-sm"></div>
+          <button class="w-full mt-2 py-3 rounded-lg bg-amber-500 text-slate-900 font-semibold shadow hover:brightness-95 transition">Sign In</button>
+        </form>
+
+      </div>
+      <div class="p-4 bg-slate-800 text-slate-400 text-xs text-center"> © copyright basith paravoor
+        <a class="text-amber-400 ml-1" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank" rel="noopener">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // ensure default credentials & settings exist
+    (function(){
+      const credsKey = 'tfm_credentials';
+      if(!localStorage.getItem(credsKey)){
+        localStorage.setItem(credsKey, JSON.stringify({username:'9526220564', password:'Thaju@1992'}));
+      }
+      if(!localStorage.getItem('tfm_settings')){
+        localStorage.setItem('tfm_settings', JSON.stringify({theme:'light', fontSize:'medium', fontFamily:'Inter'}));
+      }
+    })();
+
+    // if already logged in, go to dashboard
+    if(localStorage.getItem('tfm_logged_in') === 'true'){
+      location.href = 'dashboard.html';
+    }
+
+    // login handler
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      const creds = JSON.parse(localStorage.getItem('tfm_credentials')||'{}');
+      const errorEl = document.getElementById('loginError');
+      if(u === creds.username && p === creds.password){
+        localStorage.setItem('tfm_logged_in','true');
+        location.href = 'dashboard.html';
+      }else{
+        errorEl.textContent = 'Incorrect username or password.';
+        errorEl.classList.remove('hidden');
+        setTimeout(()=> errorEl.classList.add('hidden'), 4000);
+      }
+    });
+  </script>
+</body>
+</html>

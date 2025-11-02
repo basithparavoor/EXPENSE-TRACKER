@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>View By Name — Finance Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}</style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900 pb-28">
+  <div class="p-4">
+    <header class="flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-semibold">View By Name</h2>
+        <p class="text-sm text-slate-500">Overview per contact</p>
+      </div>
+      <div>
+        <a href="dashboard.html" class="px-3 py-2 bg-white rounded shadow">Back</a>
+      </div>
+    </header>
+
+    <div id="cards" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+  </div>
+
+  <!-- Footer -->
+    <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
+      <div class="bg-white p-2 rounded-full shadow text-xs">
+        © copyright basith paravoor
+        <a class="text-amber-500 ml-1" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">Contact</a>
+      </div>
+    </footer>
+  <!-- Bottom nav -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
+      <div class="flex justify-around p-2">
+        <a href="dashboard.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Dashboard</div>
+        </a>
+        <a href="expenses.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Expenses</div>
+        </a>
+        <a href="incomes.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Incomes</div>
+        </a>
+        <a href="settings.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Settings</div>
+        </a>
+      </div>
+    </nav>
+
+  <!-- html2canvas CDN for sharing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
+    function renderCards(){
+      const contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
+      const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
+      const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
+      const names = new Set();
+      contacts.forEach(c=> names.add(c.name));
+      incomes.forEach(i=> names.add(i.name));
+      expenses.forEach(e=> names.add(e.name));
+      const arr = Array.from(names).filter(x=> x);
+      const out = document.getElementById('cards'); out.innerHTML = '';
+      if(arr.length === 0){
+        out.innerHTML = '<div class="p-4 bg-white rounded shadow">No contacts found yet.</div>'; return;
+      }
+      arr.forEach(name=>{
+        const totalIncome = incomes.filter(i=> i.name === name).reduce((s,i)=> s + Number(i.amount||0), 0);
+        const totalExpense = expenses.filter(e=> e.name === name).reduce((s,e)=> s + Number(e.amount||0), 0);
+        const card = document.createElement('div'); card.className = 'p-4 bg-white rounded-2xl shadow flex flex-col';
+        card.innerHTML = `<div class="flex justify-between items-start">
+            <div>
+              <div class="font-bold text-lg">${name}</div>
+              <div class="text-xs text-slate-500 mt-1">Incomes & expenses summary</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm text-slate-500">Net</div>
+              <div class="font-bold text-lg">₹ ${(totalIncome - totalExpense).toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="p-3 rounded bg-green-50">
+              <div class="text-xs text-slate-600">Total Incomes</div>
+              <div class="font-semibold">₹ ${totalIncome.toLocaleString()}</div>
+            </div>
+            <div class="p-3 rounded bg-rose-50">
+              <div class="text-xs text-slate-600">Total Expenses</div>
+              <div class="font-semibold">₹ ${totalExpense.toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="mt-4 flex gap-2">
+            <button class="shareBtn px-3 py-2 bg-slate-800 text-white rounded" data-name="${name}">Share</button>
+            <a class="px-3 py-2 bg-slate-100 rounded" href="expenses.html">View</a>
+          </div>`;
+        out.appendChild(card);
+      });
+
+      // share functionality
+      document.querySelectorAll('.shareBtn').forEach(b=>{
+        b.addEventListener('click', async e=>{
+          const name = e.target.dataset.name;
+          const el = e.target.closest('div[class*="shadow"]');
+          // use html2canvas to capture
+          const canvas = await html2canvas(el, {scale:2});
+          canvas.toBlob(function(blob){
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${name.replace(/\s+/g,'_')}_summary.png`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+          }, 'image/png');
+        });
+      });
+    }
+
+    renderCards();
+  </script>
+</body>
+</html>

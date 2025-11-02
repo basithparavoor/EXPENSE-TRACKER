@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Incomes — Finance Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}</style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900 pb-28">
+  <div class="p-4">
+    <header class="flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-semibold">Incomes</h2>
+        <p class="text-sm text-slate-500">Record and manage incomes</p>
+      </div>
+      <div>
+        <a href="dashboard.html" class="px-3 py-2 bg-white rounded shadow">Back</a>
+      </div>
+    </header>
+
+    <div class="mt-4 bg-white rounded-2xl p-4 shadow">
+      <div class="flex gap-2">
+        <button id="tabAdd" class="tab-btn px-3 py-2 bg-green-500 text-white rounded">Add Income</button>
+        <button id="tabView" class="tab-btn px-3 py-2 bg-slate-100 rounded">View Incomes</button>
+        <button id="tabPending" class="tab-btn px-3 py-2 bg-slate-100 rounded">Return Pending</button>
+      </div>
+
+      <div id="addPane" class="mt-4">
+        <form id="incomeForm" class="space-y-3">
+          <div>
+            <label class="text-sm">Income Number</label>
+            <input id="incNumber" readonly class="w-full mt-1 p-3 rounded bg-slate-50 border" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-sm">Date</label>
+              <input id="incDate" type="date" class="w-full mt-1 p-3 rounded border" required />
+            </div>
+            <div>
+              <label class="text-sm">Amount (₹)</label>
+              <input id="incAmount" type="number" class="w-full mt-1 p-3 rounded border" required />
+            </div>
+          </div>
+          <div>
+            <label class="text-sm">Purpose</label>
+            <input id="incPurpose" class="w-full mt-1 p-3 rounded border" />
+          </div>
+          <div>
+            <label class="text-sm">Name</label>
+            <input id="incName" list="namesList" class="w-full mt-1 p-3 rounded border" />
+            <datalist id="namesList"></datalist>
+          </div>
+          <div>
+            <label class="text-sm">Phone</label>
+            <input id="incPhone" class="w-full mt-1 p-3 rounded border" />
+          </div>
+          <div>
+            <label class="text-sm">Last Date (optional)</label>
+            <input id="incLastDate" type="date" class="w-full mt-1 p-3 rounded border" />
+          </div>
+
+          <div class="flex gap-2">
+            <button class="px-4 py-2 bg-green-500 text-white rounded">Save Income</button>
+            <button id="incClear" type="button" class="px-4 py-2 bg-slate-100 rounded">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="viewPane" class="mt-4 hidden">
+        <div class="flex items-center justify-between">
+          <div id="totalIncomes" class="font-semibold">Total Incomes: ₹ 0</div>
+          <div class="flex gap-2">
+            <input id="incSearch" placeholder="Search name, purpose, date, amount" class="p-2 border rounded" />
+            <select id="incFilter" class="p-2 border rounded"><option value="">Filter by Name</option></select>
+            <button id="downloadIncCsv" class="px-3 py-2 bg-slate-800 text-white rounded">CSV</button>
+            <button id="downloadIncPdf" class="px-3 py-2 bg-slate-800 text-white rounded">PDF</button>
+          </div>
+        </div>
+        <div id="incomesList" class="mt-3 space-y-2"></div>
+      </div>
+
+      <div id="pendingPane" class="mt-4 hidden">
+        <h4 class="font-semibold">Return Pending (past lastDate)</h4>
+        <div id="pendingList" class="mt-3 space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Footer -->
+    <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
+      <div class="bg-white p-2 rounded-full shadow text-xs">
+        © copyright basith paravoor
+        <a class="text-amber-500 ml-1" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">Contact</a>
+      </div>
+    </footer>
+  <!-- Bottom nav -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
+      <div class="flex justify-around p-2">
+        <a href="dashboard.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Dashboard</div>
+        </a>
+        <a href="expenses.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Expenses</div>
+        </a>
+        <a href="viewbyname.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">By Name</div>
+        </a>
+        <a href="settings.html" class="text-slate-700 text-center py-2">
+          <div class="text-xs font-semibold">Settings</div>
+        </a>
+      </div>
+    </nav>
+
+  <script src="app.js"></script>
+  <script>
+    if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
+    // tabs
+    const tAdd = document.getElementById('tabAdd'), tView = document.getElementById('tabView'), tPend = document.getElementById('tabPending');
+    const pAdd = document.getElementById('addPane'), pView = document.getElementById('viewPane'), pPend = document.getElementById('pendingPane');
+    tAdd.addEventListener('click', ()=> { tAdd.classList.add('bg-green-500','text-white'); tView.classList.remove('bg-green-500','text-white'); tPend.classList.remove('bg-green-500','text-white'); pAdd.classList.remove('hidden'); pView.classList.add('hidden'); pPend.classList.add('hidden'); });
+    tView.addEventListener('click', ()=> { tView.classList.add('bg-green-500','text-white'); tAdd.classList.remove('bg-green-500','text-white'); tPend.classList.remove('bg-green-500','text-white'); pView.classList.remove('hidden'); pAdd.classList.add('hidden'); pPend.classList.add('hidden'); loadIncomes(); });
+    tPend.addEventListener('click', ()=> { tPend.classList.add('bg-green-500','text-white'); tAdd.classList.remove('bg-green-500','text-white'); tView.classList.remove('bg-green-500','text-white'); pPend.classList.remove('hidden'); pAdd.classList.add('hidden'); pView.classList.add('hidden'); loadPending(); });
+
+    // init
+    document.getElementById('incNumber').value = '#'+ (JSON.parse(localStorage.getItem('tfm_incomes')||'[]').length + 1);
+    refreshNamesDatalist();
+
+    document.getElementById('incName').addEventListener('input', function(){
+      const val = this.value.trim();
+      const contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
+      const found = contacts.find(c=> c.name === val);
+      if(found) document.getElementById('incPhone').value = found.phone || '';
+    });
+
+    // save income
+    document.getElementById('incomeForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const arr = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
+      const item = {
+        id: arr.length + 1,
+        date: document.getElementById('incDate').value,
+        purpose: document.getElementById('incPurpose').value,
+        name: document.getElementById('incName').value.trim(),
+        phone: document.getElementById('incPhone').value.trim(),
+        amount: Number(document.getElementById('incAmount').value) || 0,
+        lastDate: document.getElementById('incLastDate').value || '',
+        createdAt: new Date().toISOString()
+      };
+      arr.push(item);
+      localStorage.setItem('tfm_incomes', JSON.stringify(arr));
+      // save contact
+      const contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
+      const existing = contacts.find(c=> c.name === item.name);
+      if(!existing) contacts.push({name:item.name, phone:item.phone});
+      else if(item.phone) existing.phone = item.phone;
+      localStorage.setItem('tfm_contacts', JSON.stringify(contacts));
+      this.reset();
+      document.getElementById('incNumber').value = '#'+ (arr.length + 1);
+      refreshNamesDatalist();
+      alert('Income saved');
+    });
+
+    document.getElementById('incClear').addEventListener('click', ()=> document.getElementById('incomeForm').reset());
+
+    function loadIncomes(){
+      const arr = JSON.parse(localStorage.getItem('tfm_incomes')||'[]').slice().reverse();
+      const out = document.getElementById('incomesList'); out.innerHTML = '';
+      const total = arr.reduce((s,i)=> s + Number(i.amount||0), 0);
+      document.getElementById('totalIncomes').textContent = 'Total Incomes: ₹ ' + total.toLocaleString();
+      const searchVal = (document.getElementById('incSearch').value || '').toLowerCase();
+      const filterName = document.getElementById('incFilter').value;
+      arr.forEach(i => {
+        if(filterName && i.name !== filterName) return;
+        if(searchVal){
+          const hay = (i.name + ' ' + (i.purpose||'') + ' ' + (i.date||'') + ' ' + (i.amount||'')).toLowerCase();
+          if(!hay.includes(searchVal)) return;
+        }
+        const el = document.createElement('div'); el.className = 'p-3 border rounded flex justify-between items-start bg-slate-50';
+        el.innerHTML = `<div>
+            <div class="font-semibold">${i.name || '—'} <span class="text-xs text-slate-400">#${i.id}</span></div>
+            <div class="text-sm text-slate-500">${i.purpose || ''}</div>
+            <div class="text-xs text-slate-400 mt-1">${i.date || ''} • ${i.phone || ''} ${i.lastDate ? ' • last: '+i.lastDate : ''}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold">₹ ${Number(i.amount||0).toLocaleString()}</div>
+            <div class="flex gap-2 mt-2">
+              <button data-id="${i.id}" class="editInc px-2 py-1 bg-white rounded border text-xs">Edit</button>
+              <button data-id="${i.id}" class="delInc px-2 py-1 bg-red-500 text-white rounded text-xs">Delete</button>
+            </div>
+          </div>`;
+        out.appendChild(el);
+      });
+
+      // bind events
+      document.querySelectorAll('.delInc').forEach(b => b.addEventListener('click', (ev)=>{
+        const id = Number(ev.target.dataset.id);
+        if(!confirm('Delete this income?')) return;
+        let arr = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
+        arr = arr.filter(x=> x.id !== id).map((it, idx)=> ({...it, id: idx+1}));
+        localStorage.setItem('tfm_incomes', JSON.stringify(arr)); refreshNamesDatalist(); loadIncomes();
+      }));
+      document.querySelectorAll('.editInc').forEach(b => b.addEventListener('click', (ev)=>{
+        const id = Number(ev.target.dataset.id);
+        let arr = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
+        const item = arr.find(x=> x.id === id);
+        if(!item) return alert('Not found');
+        // fill
+        tAdd.click();
+        document.getElementById('incNumber').value = '#'+ item.id;
+        document.getElementById('incDate').value = item.date;
+        document.getElementById('incPurpose').value = item.purpose;
+        document.getElementById('incName').value = item.name;
+        document.getElementById('incPhone').value = item.phone;
+        document.getElementById('incAmount').value = item.amount;
+        document.getElementById('incLastDate').value = item.lastDate;
+        // remove existing
+        arr.splice(arr.findIndex(x=> x.id===id),1);
+        localStorage.setItem('tfm_incomes', JSON.stringify(arr.map((it,idx)=> ({...it, id: idx+1}))));
+      }));
+    }
+
+    document.getElementById('downloadIncCsv').addEventListener('click', ()=>{
+      const arr = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
+      if(arr.length === 0){ alert('No data'); return; }
+      const header = ['id','date','purpose','name','phone','amount','lastDate','createdAt'];
+      const csv = [header.join(',')].concat(arr.map(r=> header.map(h=> `"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'incomes.csv'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('downloadIncPdf').addEventListener('click', ()=>{
+      exportListAsPDF('tfm_incomes', 'incomes.pdf');
+    });
+
+    function loadPending(){
+      const arr = JSON.parse(localStorage.getItem('tfm_incomes')||'[]').filter(x=> x.lastDate);
+      const out = document.getElementById('pendingList'); out.innerHTML = '';
+      const now = new Date();
+      arr.forEach(i=>{
+        if(new Date(i.lastDate) < now){
+          const el = document.createElement('div'); el.className = 'p-3 border rounded bg-slate-50 flex justify-between';
+          el.innerHTML = `<div>
+            <div class="font-semibold">${i.name} <span class="text-xs text-slate-400">#${i.id}</span></div>
+            <div class="text-xs text-slate-500">${i.purpose} • last: ${i.lastDate}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold">₹ ${Number(i.amount||0).toLocaleString()}</div>
+            <div class="text-xs text-rose-600">Past due</div>
+          </div>`;
+          out.appendChild(el);
+        }
+      });
+    }
+
+    document.getElementById('incSearch').addEventListener('input', loadIncomes);
+    document.getElementById('incFilter').addEventListener('change', loadIncomes);
+
+    refreshNamesDatalist();
+  </script>
+</body>
+</html>
