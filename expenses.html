@@ -2,17 +2,27 @@
 <html lang="en" class="antialiased">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Expenses — Finance Manager</title>
+  <title>Expenses — FinAssist</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}</style>
+
+  <!-- FinAssist Branding -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <meta property="og:image" content="logo.png">
+  <meta name="theme-color" content="#005f4b">
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900 pb-28">
   <div class="p-4">
     <header class="flex items-center justify-between">
-      <div>
-        <h2 class="text-lg font-semibold">Expenses</h2>
-        <p class="text-sm text-slate-500">Add and manage your expenses</p>
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="FinAssist" class="h-8 w-auto">
+        <div>
+          <h2 class="text-lg font-semibold">Expenses</h2>
+          <p class="text-sm text-slate-500">Add and manage your expenses</p>
+        </div>
       </div>
       <div>
         <a href="dashboard.html" class="px-3 py-2 bg-white rounded shadow">Back</a>
@@ -84,41 +94,32 @@
   </div>
 
   <!-- Footer -->
-    <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
-      <div class="bg-white p-2 rounded-full shadow text-xs">
-        © copyright basith paravoor
-        <a class="text-amber-500 ml-1" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">Contact</a>
-      </div>
-    </footer>
+  <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
+    <div class="bg-white p-2 rounded-full shadow text-xs flex items-center gap-2">
+      <img src="favicon.png" class="h-4 w-4" alt="FinAssist">
+      <a class="text-slate-700" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">© copyright basith paravoor</a>
+    </div>
+  </footer>
+
   <!-- Bottom nav -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
-      <div class="flex justify-around p-2">
-        <a href="dashboard.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Dashboard</div>
-        </a>
-        <a href="incomes.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Incomes</div>
-        </a>
-        <a href="viewbyname.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">By Name</div>
-        </a>
-        <a href="settings.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Settings</div>
-        </a>
-      </div>
-    </nav>
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
+    <div class="flex justify-around p-2">
+      <a href="dashboard.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Dashboard</div></a>
+      <a href="incomes.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Incomes</div></a>
+      <a href="viewbyname.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">By Name</div></a>
+      <a href="settings.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Settings</div></a>
+    </div>
+  </nav>
 
   <script src="app.js"></script>
   <script>
     if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
 
-    // tabs
     const tabAdd = document.getElementById('tabAdd'), tabView = document.getElementById('tabView');
     const addPane = document.getElementById('addPane'), viewPane = document.getElementById('viewPane');
     tabAdd.addEventListener('click', ()=> { tabAdd.classList.add('bg-amber-500','text-white'); tabView.classList.remove('bg-amber-500','text-white'); addPane.classList.remove('hidden'); viewPane.classList.add('hidden'); });
     tabView.addEventListener('click', ()=> { tabView.classList.add('bg-amber-500','text-white'); tabAdd.classList.remove('bg-amber-500','text-white'); viewPane.classList.remove('hidden'); addPane.classList.add('hidden'); loadExpenses(); });
 
-    // helpers
     function genNext(listKey){ const arr = JSON.parse(localStorage.getItem(listKey)||'[]'); return arr.length+1; }
     function saveContactIfNeeded(name, phone){
       if(!name) return;
@@ -132,32 +133,30 @@
       }
     }
 
-    // initial values
     document.getElementById('expNumber').value = '#'+ genNext('tfm_expenses');
 
-    // populate datalist
     function refreshNamesDatalist(){
-      const d = document.getElementById('namesList'); d.innerHTML = '';
+      const d = document.getElementById('namesList'); if(d) d.innerHTML = '';
       const contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
       const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
       const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
       const names = new Set();
-      contacts.forEach(c=> names.add(c.name));
-      incomes.forEach(i=> names.add(i.name));
-      expenses.forEach(e=> names.add(e.name));
+      contacts.forEach(c=> c && c.name && names.add(c.name));
+      incomes.forEach(i=> i && i.name && names.add(i.name));
+      expenses.forEach(e=> e && e.name && names.add(e.name));
       Array.from(names).forEach(n=> {
-        const opt = document.createElement('option'); opt.value = n; d.appendChild(opt);
+        if(d){ const opt = document.createElement('option'); opt.value = n; d.appendChild(opt); }
       });
-      // filter dropdown (view)
-      const filter = document.getElementById('expFilter'); const prev = filter.value;
-      filter.innerHTML = '<option value="">Filter by Name</option>';
-      Array.from(names).forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; filter.appendChild(o); });
-      filter.value = prev || '';
+      const filter = document.getElementById('expFilter'); if(filter){
+        const prev = filter.value;
+        filter.innerHTML = '<option value="">Filter by Name</option>';
+        Array.from(names).forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; filter.appendChild(o); });
+        filter.value = prev || '';
+      }
     }
 
     refreshNamesDatalist();
 
-    // when name typed, auto fill phone if present
     document.getElementById('expName').addEventListener('input', function(){
       const val = this.value.trim();
       const contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
@@ -165,7 +164,6 @@
       if(found) document.getElementById('expPhone').value = found.phone || '';
     });
 
-    // save expense
     document.getElementById('expenseForm').addEventListener('submit', function(e){
       e.preventDefault();
       const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
@@ -181,7 +179,6 @@
       expenses.push(item);
       localStorage.setItem('tfm_expenses', JSON.stringify(expenses));
       saveContactIfNeeded(item.name, item.phone);
-      // reset
       this.reset();
       document.getElementById('expNumber').value = '#'+ (expenses.length + 1);
       refreshNamesDatalist();
@@ -190,7 +187,6 @@
 
     document.getElementById('expClear').addEventListener('click', ()=> document.getElementById('expenseForm').reset());
 
-    // View expenses
     function loadExpenses(){
       const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]').slice().reverse();
       const out = document.getElementById('expensesList');
@@ -221,7 +217,7 @@
           </div>`;
         out.appendChild(el);
       });
-      // attach events
+
       document.querySelectorAll('.delExp').forEach(b => b.addEventListener('click', (ev)=>{
         const id = Number(ev.target.dataset.id);
         if(!confirm('Delete this expense?')) return;
@@ -235,7 +231,6 @@
         const arr = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
         const item = arr.find(x=> x.id === id);
         if(!item) return alert('Not found');
-        // fill form and switch to Add tab
         tabAdd.click();
         document.getElementById('expNumber').value = '#'+ item.id;
         document.getElementById('expDate').value = item.date;
@@ -243,7 +238,6 @@
         document.getElementById('expName').value = item.name;
         document.getElementById('expPhone').value = item.phone;
         document.getElementById('expAmount').value = item.amount;
-        // remove original item and update on save (we'll implement by deleting and on save it will append; to preserve id sequence we can override save behavior)
         arr.splice(arr.findIndex(x=> x.id===id),1);
         localStorage.setItem('tfm_expenses', JSON.stringify(arr.map((it,idx)=> ({...it, id: idx+1}))));
       }));
@@ -262,13 +256,11 @@
     });
 
     document.getElementById('downloadExpPdf').addEventListener('click', ()=>{
-      // simple PDF table generation using jsPDF (in app.js we import it)
       exportListAsPDF('tfm_expenses', 'expenses.pdf');
     });
 
-    // kick
     refreshNamesDatalist();
-    if(viewPane.classList.contains('hidden')){} else loadExpenses();
+    if(!viewPane.classList.contains('hidden')) loadExpenses();
   </script>
 </body>
 </html>

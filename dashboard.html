@@ -3,18 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard — Finance Manager</title>
+  <title>Dashboard — FinAssist</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}</style>
+
+  <!-- FinAssist Branding -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <meta property="og:image" content="logo.png">
+  <meta name="theme-color" content="#005f4b">
 </head>
 <body class="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
   <div id="app" class="min-h-screen pb-20">
     <!-- Header -->
     <header class="p-4 flex items-center justify-between">
-      <div>
-        <h2 class="text-lg font-semibold">Dashboard</h2>
-        <p class="text-sm text-slate-500">Welcome back, Thajudheen</p>
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="FinAssist" class="h-10 w-auto">
+        <div>
+          <h2 class="text-lg font-semibold">FinAssist</h2>
+          <p class="text-sm text-slate-500">Welcome back, Thajudheen</p>
+        </div>
       </div>
       <div>
         <button id="logoutBtn" class="px-3 py-2 rounded-md bg-slate-100 border">Logout</button>
@@ -55,9 +65,9 @@
 
     <!-- Footer -->
     <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
-      <div class="bg-white p-2 rounded-full shadow text-xs">
-        © copyright basith paravoor
-        <a class="text-amber-500 ml-1" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">Contact</a>
+      <div class="bg-white p-2 rounded-full shadow text-xs flex items-center gap-2">
+        <img src="favicon.png" class="h-4 w-4" alt="FinAssist">
+        <a class="text-slate-700" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">© copyright basith paravoor</a>
       </div>
     </footer>
 
@@ -82,7 +92,6 @@
 
   <script src="app.js"></script>
   <script>
-    // require authentication
     if(localStorage.getItem('tfm_logged_in') !== 'true') { location.href = 'index.html'; }
 
     function formatRupee(n){ return '₹ ' + Number(n||0).toLocaleString(); }
@@ -97,12 +106,10 @@
       document.getElementById('netBalance').textContent = formatRupee(totalIncome - totalExpense);
     }
 
-    // welcome toast
     const toast = document.getElementById('welcomeToast');
     setTimeout(()=>{ toast.classList.add('opacity-100'); toast.classList.remove('pointer-events-none'); }, 200);
     setTimeout(()=>{ toast.classList.remove('opacity-100'); }, 3200);
 
-    // logout
     document.getElementById('logoutBtn').addEventListener('click', ()=>{
       localStorage.removeItem('tfm_logged_in');
       location.href = 'index.html';

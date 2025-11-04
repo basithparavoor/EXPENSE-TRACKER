@@ -2,17 +2,27 @@
 <html lang="en" class="antialiased">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>View By Name — Finance Manager</title>
+  <title>View By Name — FinAssist</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}</style>
+
+  <!-- FinAssist Branding -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <meta property="og:image" content="logo.png">
+  <meta name="theme-color" content="#005f4b">
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900 pb-28">
   <div class="p-4">
     <header class="flex items-center justify-between">
-      <div>
-        <h2 class="text-lg font-semibold">View By Name</h2>
-        <p class="text-sm text-slate-500">Overview per contact</p>
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="FinAssist" class="h-8 w-auto">
+        <div>
+          <h2 class="text-lg font-semibold">View By Name</h2>
+          <p class="text-sm text-slate-500">Overview per contact</p>
+        </div>
       </div>
       <div>
         <a href="dashboard.html" class="px-3 py-2 bg-white rounded shadow">Back</a>
@@ -23,31 +33,23 @@
   </div>
 
   <!-- Footer -->
-    <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
-      <div class="bg-white p-2 rounded-full shadow text-xs">
-        © copyright basith paravoor
-        <a class="text-amber-500 ml-1" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">Contact</a>
-      </div>
-    </footer>
-  <!-- Bottom nav -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
-      <div class="flex justify-around p-2">
-        <a href="dashboard.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Dashboard</div>
-        </a>
-        <a href="expenses.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Expenses</div>
-        </a>
-        <a href="incomes.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Incomes</div>
-        </a>
-        <a href="settings.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Settings</div>
-        </a>
-      </div>
-    </nav>
+  <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
+    <div class="bg-white p-2 rounded-full shadow text-xs flex items-center gap-2">
+      <img src="favicon.png" class="h-4 w-4" alt="FinAssist">
+      <a class="text-slate-700" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">© copyright basith paravoor</a>
+    </div>
+  </footer>
 
-  <!-- html2canvas CDN for sharing -->
+  <!-- Bottom nav -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
+    <div class="flex justify-around p-2">
+      <a href="dashboard.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Dashboard</div></a>
+      <a href="expenses.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Expenses</div></a>
+      <a href="incomes.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Incomes</div></a>
+      <a href="settings.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Settings</div></a>
+    </div>
+  </nav>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="app.js"></script>
   <script>
@@ -57,9 +59,9 @@
       const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
       const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
       const names = new Set();
-      contacts.forEach(c=> names.add(c.name));
-      incomes.forEach(i=> names.add(i.name));
-      expenses.forEach(e=> names.add(e.name));
+      contacts.forEach(c=> c && c.name && names.add(c.name));
+      incomes.forEach(i=> i && i.name && names.add(i.name));
+      expenses.forEach(e=> e && e.name && names.add(e.name));
       const arr = Array.from(names).filter(x=> x);
       const out = document.getElementById('cards'); out.innerHTML = '';
       if(arr.length === 0){
@@ -96,12 +98,10 @@
         out.appendChild(card);
       });
 
-      // share functionality
       document.querySelectorAll('.shareBtn').forEach(b=>{
         b.addEventListener('click', async e=>{
           const name = e.target.dataset.name;
           const el = e.target.closest('div[class*="shadow"]');
-          // use html2canvas to capture
           const canvas = await html2canvas(el, {scale:2});
           canvas.toBlob(function(blob){
             const a = document.createElement('a');

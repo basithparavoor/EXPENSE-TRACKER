@@ -2,17 +2,27 @@
 <html lang="en" class="antialiased">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Incomes — Finance Manager</title>
+  <title>Incomes — FinAssist</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}</style>
+
+  <!-- FinAssist Branding -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <meta property="og:image" content="logo.png">
+  <meta name="theme-color" content="#005f4b">
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900 pb-28">
   <div class="p-4">
     <header class="flex items-center justify-between">
-      <div>
-        <h2 class="text-lg font-semibold">Incomes</h2>
-        <p class="text-sm text-slate-500">Record and manage incomes</p>
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="FinAssist" class="h-8 w-auto">
+        <div>
+          <h2 class="text-lg font-semibold">Incomes</h2>
+          <p class="text-sm text-slate-500">Record and manage incomes</p>
+        </div>
       </div>
       <div>
         <a href="dashboard.html" class="px-3 py-2 bg-white rounded shadow">Back</a>
@@ -87,42 +97,33 @@
     </div>
   </div>
 
- <!-- Footer -->
-    <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
-      <div class="bg-white p-2 rounded-full shadow text-xs">
-        © copyright basith paravoor
-        <a class="text-amber-500 ml-1" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">Contact</a>
-      </div>
-    </footer>
+  <!-- Footer -->
+  <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
+    <div class="bg-white p-2 rounded-full shadow text-xs flex items-center gap-2">
+      <img src="favicon.png" class="h-4 w-4" alt="FinAssist">
+      <a class="text-slate-700" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">© copyright basith paravoor</a>
+    </div>
+  </footer>
+
   <!-- Bottom nav -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
-      <div class="flex justify-around p-2">
-        <a href="dashboard.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Dashboard</div>
-        </a>
-        <a href="expenses.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Expenses</div>
-        </a>
-        <a href="viewbyname.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">By Name</div>
-        </a>
-        <a href="settings.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Settings</div>
-        </a>
-      </div>
-    </nav>
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
+    <div class="flex justify-around p-2">
+      <a href="dashboard.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Dashboard</div></a>
+      <a href="expenses.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Expenses</div></a>
+      <a href="viewbyname.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">By Name</div></a>
+      <a href="settings.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Settings</div></a>
+    </div>
+  </nav>
 
   <script src="app.js"></script>
   <script>
     if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
-    // tabs
     const tAdd = document.getElementById('tabAdd'), tView = document.getElementById('tabView'), tPend = document.getElementById('tabPending');
     const pAdd = document.getElementById('addPane'), pView = document.getElementById('viewPane'), pPend = document.getElementById('pendingPane');
     tAdd.addEventListener('click', ()=> { tAdd.classList.add('bg-green-500','text-white'); tView.classList.remove('bg-green-500','text-white'); tPend.classList.remove('bg-green-500','text-white'); pAdd.classList.remove('hidden'); pView.classList.add('hidden'); pPend.classList.add('hidden'); });
     tView.addEventListener('click', ()=> { tView.classList.add('bg-green-500','text-white'); tAdd.classList.remove('bg-green-500','text-white'); tPend.classList.remove('bg-green-500','text-white'); pView.classList.remove('hidden'); pAdd.classList.add('hidden'); pPend.classList.add('hidden'); loadIncomes(); });
     tPend.addEventListener('click', ()=> { tPend.classList.add('bg-green-500','text-white'); tAdd.classList.remove('bg-green-500','text-white'); tView.classList.remove('bg-green-500','text-white'); pPend.classList.remove('hidden'); pAdd.classList.add('hidden'); pView.classList.add('hidden'); loadPending(); });
 
-    // init
     document.getElementById('incNumber').value = '#'+ (JSON.parse(localStorage.getItem('tfm_incomes')||'[]').length + 1);
     refreshNamesDatalist();
 
@@ -133,7 +134,6 @@
       if(found) document.getElementById('incPhone').value = found.phone || '';
     });
 
-    // save income
     document.getElementById('incomeForm').addEventListener('submit', function(e){
       e.preventDefault();
       const arr = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
@@ -149,7 +149,6 @@
       };
       arr.push(item);
       localStorage.setItem('tfm_incomes', JSON.stringify(arr));
-      // save contact
       const contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
       const existing = contacts.find(c=> c.name === item.name);
       if(!existing) contacts.push({name:item.name, phone:item.phone});
@@ -192,7 +191,6 @@
         out.appendChild(el);
       });
 
-      // bind events
       document.querySelectorAll('.delInc').forEach(b => b.addEventListener('click', (ev)=>{
         const id = Number(ev.target.dataset.id);
         if(!confirm('Delete this income?')) return;
@@ -205,7 +203,6 @@
         let arr = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
         const item = arr.find(x=> x.id === id);
         if(!item) return alert('Not found');
-        // fill
         tAdd.click();
         document.getElementById('incNumber').value = '#'+ item.id;
         document.getElementById('incDate').value = item.date;
@@ -214,7 +211,6 @@
         document.getElementById('incPhone').value = item.phone;
         document.getElementById('incAmount').value = item.amount;
         document.getElementById('incLastDate').value = item.lastDate;
-        // remove existing
         arr.splice(arr.findIndex(x=> x.id===id),1);
         localStorage.setItem('tfm_incomes', JSON.stringify(arr.map((it,idx)=> ({...it, id: idx+1}))));
       }));

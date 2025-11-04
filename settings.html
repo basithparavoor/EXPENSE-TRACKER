@@ -1,171 +1,428 @@
 <!doctype html>
 <html lang="en" class="antialiased">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Settings — Finance Manager</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Settings — FinAssist</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}</style>
+  <meta name="theme-color" content="#005f4b">
+  <style>
+    html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}
+    /* small, subtle card animation */
+    .card-appear { transform: translateY(8px); opacity: 0; animation: comeUp .36s forwards; }
+    @keyframes comeUp { to { transform: translateY(0); opacity: 1; } }
+    /* prettier scrollbar for long lists (desktop) */
+    ::-webkit-scrollbar { height: 8px; width: 8px; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 999px; }
+  </style>
+
+  <!-- FinAssist Branding -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <meta property="og:image" content="logo.png">
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-900 pb-28">
-  <div class="p-4">
-    <header class="flex items-center justify-between">
-      <div>
-        <h2 class="text-lg font-semibold">Settings</h2>
-        <p class="text-sm text-slate-500">Personalize and manage data</p>
+
+<body class="bg-slate-50 min-h-screen text-slate-900">
+  <div class="max-w-3xl mx-auto p-4">
+    <!-- Header -->
+    <header class="flex items-center justify-between gap-4 mb-4">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="FinAssist" class="h-10 w-auto">
+        <div>
+          <h1 class="text-2xl font-semibold leading-tight">Settings</h1>
+          <p class="text-sm text-slate-500">Customize FinAssist to your style. Changes apply instantly.</p>
+        </div>
       </div>
-      <div><a href="dashboard.html" class="px-3 py-2 bg-white rounded shadow">Back</a></div>
+      <a href="dashboard.html" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white shadow text-sm">
+        <!-- back icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0L2.586 11a1 1 0 010-1.414l3.707-3.707a1 1 0 111.414 1.414L5.414 10l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+        Back
+      </a>
     </header>
 
-    <div class="mt-4 bg-white p-4 rounded-2xl shadow space-y-4">
-      <div>
-        <h4 class="font-semibold">Credentials</h4>
-        <form id="credForm" class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <input id="setUsername" class="p-2 border rounded" placeholder="Username" />
-          <input id="setPassword" type="password" class="p-2 border rounded" placeholder="Password" />
-          <div class="sm:col-span-2">
-            <button class="px-3 py-2 bg-amber-500 text-white rounded">Save Credentials</button>
+    <!-- layout: grid - main column + side info for desktop -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- left column: controls -->
+      <div class="lg:col-span-2 space-y-4">
+        <!-- Account & Credentials -->
+        <section class="bg-white rounded-2xl p-4 shadow card-appear">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 class="text-lg font-semibold">Account & Credentials</h2>
+              <p class="text-sm text-slate-500 mt-1">Change your login username and password used locally (stored in browser).</p>
+            </div>
+            <div class="text-sm text-slate-400">Local Only</div>
           </div>
-        </form>
-      </div>
 
-      <div>
-        <h4 class="font-semibold">Theme</h4>
-        <div class="mt-2 flex items-center gap-4">
-          <label class="flex items-center gap-2"><input type="radio" name="theme" value="light"> Light</label>
-          <label class="flex items-center gap-2"><input type="radio" name="theme" value="dark"> Dark</label>
+          <form id="credForm" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+            <div>
+              <label class="text-xs text-slate-600">Username</label>
+              <input id="setUsername" type="text" placeholder="9526220564" class="mt-1 w-full p-3 border rounded-lg bg-slate-50" />
+            </div>
+            <div>
+              <label class="text-xs text-slate-600">Password</label>
+              <input id="setPassword" type="password" placeholder="••••••••" class="mt-1 w-full p-3 border rounded-lg bg-slate-50" />
+            </div>
+
+            <div class="sm:col-span-2 flex gap-2">
+              <button type="submit" class="px-4 py-2 rounded-lg bg-amber-500 text-slate-900 font-semibold shadow">Save</button>
+              <button id="resetCredBtn" type="button" class="px-4 py-2 rounded-lg bg-slate-100">Reset</button>
+              <div id="credSaved" class="ml-auto text-sm text-emerald-600 hidden">Saved ✓</div>
+            </div>
+          </form>
+        </section>
+
+        <!-- Theme & Appearance -->
+        <section class="bg-white rounded-2xl p-4 shadow card-appear">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-semibold">Theme & Appearance</h2>
+              <p class="text-sm text-slate-500 mt-1">Toggle theme, adjust font size and family. Changes apply across the app.</p>
+            </div>
+            <div class="text-sm text-slate-400">Preview</div>
+          </div>
+
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Theme -->
+            <div>
+              <div class="text-sm font-medium mb-2">Theme</div>
+              <div class="flex gap-3">
+                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg border" id="themeLight">
+                  <input type="radio" name="theme" value="light" class="hidden">
+                  <div class="w-8 h-5 rounded bg-white border"></div>
+                  <div class="text-sm">Light</div>
+                </label>
+                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg border" id="themeDark">
+                  <input type="radio" name="theme" value="dark" class="hidden">
+                  <div class="w-8 h-5 rounded bg-slate-800"></div>
+                  <div class="text-sm">Dark</div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Font controls -->
+            <div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-sm font-medium">Typography</div>
+                  <div class="text-xs text-slate-500">Size & font family</div>
+                </div>
+                <div>
+                  <span class="text-xs text-slate-400">Global</span>
+                </div>
+              </div>
+
+              <div class="mt-3 grid grid-cols-2 gap-2">
+                <select id="fontSize" class="p-2 border rounded-lg">
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                </select>
+                <select id="fontFamily" class="p-2 border rounded-lg">
+                  <option>Inter</option>
+                  <option>Roboto</option>
+                  <option>Open Sans</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- live preview -->
+          <div class="mt-4 border border-dashed rounded-lg p-3 bg-slate-50">
+            <div id="previewBox" class="p-3 rounded">
+              <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded-md shadow"><img src="favicon.png" class="h-6 w-6" alt=""></div>
+                <div>
+                  <div id="previewTitle" class="font-semibold text-slate-800">FinAssist</div>
+                  <div id="previewSubtitle" class="text-xs text-slate-500">Your personal finance companion</div>
+                </div>
+              </div>
+              <div class="mt-3 text-sm text-slate-600">Preview sample text — amounts: <span class="font-semibold">₹ 12,345</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Data Management -->
+        <section class="bg-white rounded-2xl p-4 shadow card-appear">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-semibold">Data Management</h2>
+              <p class="text-sm text-slate-500 mt-1">Export or clear all local data. Use carefully — clearing is irreversible.</p>
+            </div>
+            <div class="text-sm text-slate-400">Local Storage</div>
+          </div>
+
+          <div class="mt-4 flex flex-col sm:flex-row gap-3">
+            <button id="exportAllCsv" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 text-white">Export CSV</button>
+            <button id="exportAllPdf" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 text-white">Export PDF</button>
+            <button id="clearAll" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white">Clear All</button>
+            <button id="downloadBackup" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-amber-500 text-slate-900">Download Backup</button>
+          </div>
+
+          <div class="mt-3 text-xs text-slate-500">Tip: Export before clearing. Backups are saved as a JSON file you can re-import if needed (manual).</div>
+        </section>
+
+        <!-- Support & About -->
+        <section class="bg-white rounded-2xl p-4 shadow card-appear">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-semibold">Support & About</h2>
+              <p class="text-sm text-slate-500 mt-1">Information about the app and quick contact.</p>
+            </div>
+            <div class="text-sm text-slate-400">v1.0</div>
+          </div>
+
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <div class="text-sm font-medium">Website</div>
+              <a class="block mt-1 text-amber-600" href="https://www.finassist.space" target="_blank">www.finassist.space</a>
+            </div>
+            <div>
+              <div class="text-sm font-medium">Contact</div>
+              <a class="block mt-1 text-amber-600" href="https://wa.me/7994531823?text=FinAssist%20Support" target="_blank">WhatsApp Support</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Logout -->
+        <div class="flex justify-end">
+          <button id="logoutBtn" class="px-4 py-2 rounded-lg bg-slate-100">Logout</button>
         </div>
       </div>
 
-      <div>
-        <h4 class="font-semibold">View (Font)</h4>
-        <div class="mt-2 grid grid-cols-2 gap-2">
-          <select id="fontSize" class="p-2 border rounded">
-            <option value="small">Small</option>
-            <option value="medium">Medium</option>
-            <option value="large">Large</option>
-          </select>
-          <select id="fontFamily" class="p-2 border rounded">
-            <option>Inter</option>
-            <option>Roboto</option>
-            <option>Open Sans</option>
-          </select>
+      <!-- right column: condensed summary & danger actions -->
+      <aside class="space-y-4">
+        <div class="bg-white rounded-2xl p-4 shadow card-appear">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold">Account</h3>
+              <p class="text-xs text-slate-500">Local login</p>
+            </div>
+            <img src="favicon.png" class="h-8 w-8" alt="logo">
+          </div>
+          <div class="mt-3 text-sm text-slate-600">
+            <div><span class="text-slate-500">User:</span> <span id="showUser">—</span></div>
+            <div class="mt-1"><span class="text-slate-500">Entries:</span> <span id="showCounts">0 incomes / 0 expenses</span></div>
+          </div>
         </div>
-      </div>
 
-      <div>
-        <h4 class="font-semibold">Data Management</h4>
-        <div class="mt-2 flex gap-2">
-          <button id="exportAllCsv" class="px-3 py-2 bg-slate-800 text-white rounded">Export All CSV</button>
-          <button id="exportAllPdf" class="px-3 py-2 bg-slate-800 text-white rounded">Export All PDF</button>
-          <button id="clearAll" class="px-3 py-2 bg-red-600 text-white rounded">Clear All Data</button>
+        <div class="bg-white rounded-2xl p-4 shadow card-appear">
+          <h3 class="font-semibold">Quick Actions</h3>
+          <div class="mt-3 flex flex-col gap-2">
+            <button id="btnExportCSV" class="px-3 py-2 rounded bg-slate-50">Export Incomes CSV</button>
+            <button id="btnExportEXP" class="px-3 py-2 rounded bg-slate-50">Export Expenses CSV</button>
+            <button id="btnClearContacts" class="px-3 py-2 rounded bg-rose-50 text-rose-700">Clear Contacts</button>
+          </div>
         </div>
-      </div>
 
-      <div>
-        <button id="logoutBtn" class="px-4 py-2 bg-slate-100 rounded">Logout</button>
+        <div class="bg-white rounded-2xl p-4 shadow card-appear">
+          <h3 class="font-semibold">Danger Zone</h3>
+          <p class="text-xs text-slate-500 mt-1">Irreversible actions</p>
+          <div class="mt-3 flex gap-2">
+            <button id="btnDangerClearAll" class="w-full px-3 py-2 rounded bg-rose-600 text-white">Clear All Data</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Confirm modal -->
+  <div id="confirmModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 z-50">
+    <div class="bg-white rounded-lg p-4 w-11/12 max-w-md shadow">
+      <h4 class="font-semibold">Confirm action</h4>
+      <p id="confirmText" class="text-sm text-slate-600 mt-2">Are you sure?</p>
+      <div class="mt-4 flex justify-end gap-2">
+        <button id="confirmCancel" class="px-4 py-2 rounded bg-slate-100">Cancel</button>
+        <button id="confirmOk" class="px-4 py-2 rounded bg-rose-600 text-white">Yes, continue</button>
       </div>
     </div>
   </div>
 
   <!-- Footer -->
-    <footer class="fixed bottom-12 left-0 right-0 flex justify-center">
-      <div class="bg-white p-2 rounded-full shadow text-xs">
-        © copyright basith paravoor
-        <a class="text-amber-500 ml-1" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">Contact</a>
-      </div>
-    </footer>
-  <!-- Bottom nav -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
-      <div class="flex justify-around p-2">
-        <a href="dashboard.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Dashboard</div>
-        </a>
-        <a href="expenses.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Expenses</div>
-        </a>
-        <a href="incomes.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">Incomes</div>
-        </a>
-        <a href="viewbyname.html" class="text-slate-700 text-center py-2">
-          <div class="text-xs font-semibold">By Name</div>
-        </a>
-      </div>
-    </nav>
+  <footer class="fixed bottom-4 left-1/2 -translate-x-1/2">
+    <div class="bg-white p-2 rounded-full shadow text-xs flex items-center gap-2">
+      <img src="favicon.png" class="h-4 w-4" alt="FinAssist">
+      <a class="text-slate-700" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">© copyright basith paravoor</a>
+    </div>
+  </footer>
 
+  <!-- scripts -->
   <script src="app.js"></script>
   <script>
-    if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
-    // load settings
-    const settings = JSON.parse(localStorage.getItem('tfm_settings')||'{"theme":"light","fontSize":"medium","fontFamily":"Inter"}');
-    document.querySelectorAll('input[name="theme"]').forEach(r=> r.checked = (r.value === settings.theme));
-    document.getElementById('fontSize').value = settings.fontSize || 'medium';
-    document.getElementById('fontFamily').value = settings.fontFamily || 'Inter';
+    // require login
+    if(localStorage.getItem('tfm_logged_in') !== 'true') location.href = 'index.html';
 
-    function applySettings(){
-      const s = JSON.parse(localStorage.getItem('tfm_settings')||'{}');
-      if(s.theme === 'dark') document.documentElement.classList.add('dark'), document.body.classList.add('bg-slate-900','text-white');
-      else document.documentElement.classList.remove('dark'), document.body.classList.remove('bg-slate-900','text-white');
-      // font size
-      if(s.fontSize === 'small') document.documentElement.style.fontSize = '14px';
-      else if(s.fontSize === 'large') document.documentElement.style.fontSize = '18px';
-      else document.documentElement.style.fontSize = '16px';
-      // font family
-      document.documentElement.style.fontFamily = s.fontFamily || 'Inter';
+    // Helpers
+    const $ = id => document.getElementById(id);
+    function readSettings(){ return JSON.parse(localStorage.getItem('tfm_settings') || '{"theme":"light","fontSize":"medium","fontFamily":"Inter"}'); }
+    function writeSettings(s){ localStorage.setItem('tfm_settings', JSON.stringify(s)); window.dispatchEvent(new Event('storage')); } // storage event not fired programmatically across tabs but app.js listens on load too
+
+    // init UI elements
+    const settings = readSettings();
+    // credentials fields
+    const creds = JSON.parse(localStorage.getItem('tfm_credentials')||'{}');
+    $('setUsername').value = creds.username || '';
+    $('setPassword').value = creds.password || '';
+
+    // show summary
+    function updateSummary(){
+      const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
+      const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
+      $('showCounts').textContent = `${incomes.length} incomes / ${expenses.length} expenses`;
+      $('showUser').textContent = (creds.username) ? creds.username : '—';
     }
-    applySettings();
+    updateSummary();
 
-    // theme change
-    document.querySelectorAll('input[name="theme"]').forEach(r=> r.addEventListener('change', function(){
-      const s = JSON.parse(localStorage.getItem('tfm_settings')||'{}'); s.theme = this.value; localStorage.setItem('tfm_settings', JSON.stringify(s)); applySettings();
-    }));
+    // theme preview logic
+    function applyLocalPreview(){
+      const s = readSettings();
+      // set radio visuals
+      document.querySelectorAll('[name="theme"]').forEach(r=>{
+        if(r.value === s.theme) r.checked = true;
+      });
+      $('fontSize').value = s.fontSize || 'medium';
+      $('fontFamily').value = s.fontFamily || 'Inter';
 
-    document.getElementById('fontSize').addEventListener('change', function(){
-      const s = JSON.parse(localStorage.getItem('tfm_settings')||'{}'); s.fontSize = this.value; localStorage.setItem('tfm_settings', JSON.stringify(s)); applySettings();
-    });
-    document.getElementById('fontFamily').addEventListener('change', function(){
-      const s = JSON.parse(localStorage.getItem('tfm_settings')||'{}'); s.fontFamily = this.value; localStorage.setItem('tfm_settings', JSON.stringify(s)); applySettings();
-    });
+      // preview area adjustments
+      const preview = $('previewBox');
+      preview.style.fontFamily = s.fontFamily;
+      if(s.fontSize === 'small') preview.style.fontSize = '14px';
+      else if(s.fontSize === 'large') preview.style.fontSize = '18px';
+      else preview.style.fontSize = '16px';
 
-    // credentials save
-    document.getElementById('credForm').addEventListener('submit', function(e){
+      // add/remove class for theme: app.js uses html.tfm-dark + runtime styles,
+      // but we add tfm-dark locally so the preview reflects change.
+      if(s.theme === 'dark') document.documentElement.classList.add('tfm-dark');
+      else document.documentElement.classList.remove('tfm-dark');
+    }
+
+    applyLocalPreview();
+
+    // handle credential form
+    $('credForm').addEventListener('submit', function(e){
       e.preventDefault();
-      const u = document.getElementById('setUsername').value.trim();
-      const p = document.getElementById('setPassword').value;
-      if(!u || !p) return alert('Provide both username and password.');
+      const u = $('setUsername').value.trim();
+      const p = $('setPassword').value;
+      if(!u || !p) return alert('Provide username and password.');
       localStorage.setItem('tfm_credentials', JSON.stringify({username:u, password:p}));
-      alert('Saved. Next login will use new credentials.');
+      // show saved quick thumb
+      $('credSaved').classList.remove('hidden');
+      setTimeout(()=> $('credSaved').classList.add('hidden'), 2200);
     });
 
-    // export all csv/pdf
-    document.getElementById('exportAllCsv').addEventListener('click', ()=>{
-      // combine incomes and expenses into separate csvs and download as files
+    $('resetCredBtn').addEventListener('click', ()=>{
+      if(!confirm('Reset to default credentials?')) return;
+      localStorage.setItem('tfm_credentials', JSON.stringify({username:'9526220564', password:'Thaju@1992'}));
+      $('setUsername').value = '9526220564';
+      $('setPassword').value = 'Thaju@1992';
+      updateSummary();
+      alert('Credentials reset to defaults.');
+    });
+
+    // theme controls
+    document.querySelectorAll('[name="theme"]').forEach(el=>{
+      el.addEventListener('change', function(){
+        const s = readSettings(); s.theme = this.value; writeSettings(s); applyLocalPreview();
+      });
+    });
+
+    // clickable theme cards give change
+    document.getElementById('themeLight').addEventListener('click', ()=>{
+      document.querySelector('[name="theme"][value="light"]').checked = true;
+      const s = readSettings(); s.theme = 'light'; writeSettings(s); applyLocalPreview();
+    });
+    document.getElementById('themeDark').addEventListener('click', ()=>{
+      document.querySelector('[name="theme"][value="dark"]').checked = true;
+      const s = readSettings(); s.theme = 'dark'; writeSettings(s); applyLocalPreview();
+    });
+
+    // font selectors
+    $('fontSize').addEventListener('change', function(){ const s = readSettings(); s.fontSize = this.value; writeSettings(s); applyLocalPreview(); });
+    $('fontFamily').addEventListener('change', function(){ const s = readSettings(); s.fontFamily = this.value; writeSettings(s); applyLocalPreview(); });
+
+    // Exports & downloads
+    function downloadCSV(arr, filename, header){
+      if(!arr || arr.length === 0){ alert(filename + ' — no data'); return; }
+      const csv = [header.join(',')].concat(arr.map(r=> header.map(h=> `"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+    }
+
+    $('exportAllCsv').addEventListener('click', ()=> {
       const inc = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
       const exp = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
-      function downloadCSV(arr, filename, header){
-        if(arr.length === 0){ alert(filename + ' — no data'); return; }
-        const csv = [header.join(',')].concat(arr.map(r=> header.map(h=> `"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
-        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
-      }
       downloadCSV(inc, 'incomes.csv', ['id','date','purpose','name','phone','amount','lastDate','createdAt']);
       downloadCSV(exp, 'expenses.csv', ['id','date','purpose','name','phone','amount','createdAt']);
     });
 
-    document.getElementById('exportAllPdf').addEventListener('click', ()=>{
+    $('exportAllPdf').addEventListener('click', ()=> {
       exportListAsPDF('tfm_incomes','incomes_all.pdf');
       exportListAsPDF('tfm_expenses','expenses_all.pdf');
     });
 
-    document.getElementById('clearAll').addEventListener('click', ()=>{
-      if(!confirm('Clear ALL data (incomes, expenses, contacts, settings)? This is irreversible.')) return;
-      localStorage.removeItem('tfm_incomes'); localStorage.removeItem('tfm_expenses'); localStorage.removeItem('tfm_contacts');
-      alert('Cleared. You will remain logged in.');
+    // backup JSON download
+    $('downloadBackup').addEventListener('click', ()=>{
+      const payload = {
+        incomes: JSON.parse(localStorage.getItem('tfm_incomes')||'[]'),
+        expenses: JSON.parse(localStorage.getItem('tfm_expenses')||'[]'),
+        contacts: JSON.parse(localStorage.getItem('tfm_contacts')||'[]'),
+        settings: readSettings(),
+        credentials: JSON.parse(localStorage.getItem('tfm_credentials')||'{}')
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `finassist-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(a.href);
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', ()=>{
-      localStorage.removeItem('tfm_logged_in'); location.href='index.html';
+    // quick exports & clear contacts
+    $('btnExportCSV').addEventListener('click', ()=> {
+      const inc = JSON.parse(localStorage.getItem('tfm_incomes')||'[]'); downloadCSV(inc, 'incomes.csv', ['id','date','purpose','name','phone','amount','lastDate','createdAt']);
     });
+    $('btnExportEXP').addEventListener('click', ()=> {
+      const exp = JSON.parse(localStorage.getItem('tfm_expenses')||'[]'); downloadCSV(exp, 'expenses.csv', ['id','date','purpose','name','phone','amount','createdAt']);
+    });
+    $('btnClearContacts').addEventListener('click', ()=> {
+      if(!confirm('Clear all saved contacts?')) return;
+      localStorage.removeItem('tfm_contacts'); alert('Contacts cleared.'); updateSummary();
+    });
+
+    // clear all with confirm modal
+    const confirmModal = $('confirmModal'), confirmText = $('confirmText'), confirmOk = $('confirmOk'), confirmCancel = $('confirmCancel');
+    function openConfirm(text, okCb){
+      confirmText.textContent = text;
+      confirmModal.classList.remove('hidden');
+      confirmOk.onclick = ()=> { confirmModal.classList.add('hidden'); okCb(); };
+      confirmCancel.onclick = ()=> confirmModal.classList.add('hidden');
+    }
+    $('clearAll').addEventListener('click', ()=> {
+      openConfirm('Erase ALL incomes, expenses, contacts and settings? This cannot be undone.', ()=>{
+        localStorage.removeItem('tfm_incomes'); localStorage.removeItem('tfm_expenses'); localStorage.removeItem('tfm_contacts'); localStorage.removeItem('tfm_settings');
+        alert('All data cleared.');
+        applyLocalPreview();
+        updateSummary();
+      });
+    });
+    $('btnDangerClearAll').addEventListener('click', ()=> $('clearAll').click());
+
+    // logout
+    $('logoutBtn').addEventListener('click', ()=>{
+      localStorage.removeItem('tfm_logged_in');
+      location.href = 'index.html';
+    });
+
+    // storage listener: update UI when settings changed elsewhere
+    window.addEventListener('storage', (e) => {
+      if(e.key === 'tfm_settings') {
+        applyLocalPreview();
+      }
+    });
+
+    // small visual init
+    setTimeout(()=> document.querySelectorAll('.card-appear').forEach((el,i)=> el.style.animationDelay = (i*60)+'ms'), 40);
+
+    // re-run counts occasionally
+    setInterval(updateSummary, 2000);
   </script>
 </body>
 </html>

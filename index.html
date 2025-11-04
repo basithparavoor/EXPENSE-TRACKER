@@ -3,17 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Thajudheen — Finance Manager (Login)</title>
+  <title>FinAssist — Login</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}</style>
+
+  <!-- FinAssist Branding -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <meta property="og:image" content="logo.png">
+  <meta name="theme-color" content="#005f4b">
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
   <div class="w-full max-w-md">
     <div class="bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl shadow-2xl overflow-hidden">
       <div class="p-6 sm:p-8">
-        <h1 class="text-2xl font-semibold">Thajudheen's Personal Finance</h1>
-        <form id="loginForm" class="mt-6 space-y-4">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="logo.png" alt="FinAssist" class="h-10 w-auto">
+          <div>
+            <h1 class="text-2xl font-semibold">FinAssist</h1>
+            <p class="text-sm text-slate-300">Personal finance manager</p>
+          </div>
+        </div>
+
+        <form id="loginForm" class="mt-2 space-y-4">
           <div>
             <label class="text-sm text-slate-300">Username</label>
             <input id="username" autocomplete="username" class="w-full mt-1 p-3 rounded-lg bg-slate-900 border border-slate-700 focus:outline-none" placeholder="Phone or username" required />
@@ -35,7 +49,6 @@
 
   <script src="app.js"></script>
   <script>
-    // ensure default credentials & settings exist
     (function(){
       const credsKey = 'tfm_credentials';
       if(!localStorage.getItem(credsKey)){
@@ -46,12 +59,10 @@
       }
     })();
 
-    // if already logged in, go to dashboard
     if(localStorage.getItem('tfm_logged_in') === 'true'){
       location.href = 'dashboard.html';
     }
 
-    // login handler
     document.getElementById('loginForm').addEventListener('submit', function(e){
       e.preventDefault();
       const u = document.getElementById('username').value.trim();
