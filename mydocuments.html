@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Documents — FinAssist</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <meta name="theme-color" content="#005f4b">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}
+    .card{box-shadow:0 8px 24px rgba(2,6,23,.06);border-radius:12px}
+    .fade-up{transform:translateY(8px);opacity:0;transition:all .36s ease}
+    .fade-up.show{transform:none;opacity:1}
+    body.modal-open { overflow: hidden !important; }
+    .badge { font-size:12px; padding:4px 8px; border-radius:8px; background:#f1f5f9; color:#0f1724; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+  <div class="max-w-4xl mx-auto p-4">
+    <header class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="FinAssist" class="h-10 w-auto">
+        <div>
+          <h1 class="text-lg font-semibold">My Documents</h1>
+          <p class="text-xs text-slate-500">Attach bills, invoices and receipts (jpg, png, pdf)</p>
+        </div>
+      </div>
+      <div class="flex gap-2 items-center">
+        <button id="chooseFolderBtn" class="px-3 py-2 rounded bg-emerald-600 text-white text-sm">Choose Folder</button>
+        <a href="dashboard.html" class="px-3 py-2 rounded bg-white border">Back</a>
+      </div>
+    </header>
+
+    <!-- folder status -->
+    <div id="folderStatus" class="mb-3 text-sm text-slate-600">Folder: <span id="folderName" class="badge">Not selected</span></div>
+
+    <!-- Add form -->
+    <section class="card bg-white p-4 mb-4 fade-up" id="addCard">
+      <form id="docForm" class="space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="text-xs text-slate-600">Title <span class="text-rose-500">*</span></label>
+            <input id="docTitle" required class="mt-1 p-3 border rounded w-full" placeholder="e.g., Electricity Bill - June 2025" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">Date (added) <span class="text-rose-500">*</span></label>
+            <input id="docDate" type="date" required class="mt-1 p-3 border rounded w-full" />
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs text-slate-600">Description (optional)</label>
+          <textarea id="docDesc" rows="2" class="mt-1 p-3 border rounded w-full" placeholder="Short note about this document"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+          <div>
+            <label class="text-xs text-slate-600">Attach file <span class="text-rose-500">*</span></label>
+            <input id="docFile" type="file" accept=".png,.jpg,.jpeg,.pdf" class="mt-1 w-full" required />
+            <div id="fileHint" class="text-xs text-slate-500 mt-1">Accepted: PNG, JPG, PDF. By selecting a folder the file is saved to your device folder (preferred). Fallback: stored in your browser (IndexedDB).</div>
+          </div>
+
+          <div class="flex gap-2">
+            <button type="submit" class="px-4 py-3 rounded bg-emerald-600 text-white font-semibold">Add Document</button>
+            <button id="clearForm" type="button" class="px-4 py-3 rounded bg-slate-100">Clear</button>
+            <div id="addMsg" class="ml-auto text-sm text-emerald-600 hidden">Saved ✓</div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Search -->
+    <div class="mb-4 flex gap-3">
+      <input id="searchInput" class="p-3 border rounded flex-1" placeholder="Search by title..." />
+      <button id="importJsonBtn" class="px-3 py-2 bg-slate-100 rounded">Import</button>
+      <button id="exportJsonBtn" class="px-3 py-2 bg-slate-100 rounded">Export</button>
+    </div>
+
+    <!-- List -->
+    <section id="listArea" class="grid grid-cols-1 gap-3"></section>
+
+    <!-- Empty state -->
+    <div id="emptyState" class="text-center text-slate-500 mt-6">
+      No documents yet. Use the form above to attach bills, invoices or receipts.
+    </div>
+
+    <footer class="mt-8 flex justify-center">
+      <div class="bg-white p-2 rounded-full shadow text-xs flex items-center gap-2">
+        <img src="favicon.png" class="h-4 w-4" alt="FinAssist">
+        <a class="text-slate-700" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">© copyright basith paravoor</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- View Modal -->
+  <div id="viewModal" class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50 p-4">
+    <div class="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-auto">
+      <div class="flex items-center justify-between p-3 border-b">
+        <div class="flex items-center gap-3">
+          <div id="viewTitle" class="font-semibold">Document</div>
+          <div id="viewDate" class="text-xs text-slate-500"></div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="viewDownload" class="px-3 py-1 text-sm rounded bg-slate-100">Download</button>
+          <button id="closeView" class="px-3 py-1 text-sm rounded bg-rose-100">Close</button>
+        </div>
+      </div>
+      <div id="viewBody" class="p-3">
+        <!-- dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50 p-4">
+    <div class="bg-white rounded-lg w-full max-w-2xl p-4">
+      <h3 class="font-semibold mb-2">Edit Document</h3>
+      <form id="editForm" class="space-y-3">
+        <input type="hidden" id="editId">
+        <div>
+          <label class="text-xs text-slate-600">Title <span class="text-rose-500">*</span></label>
+          <input id="editTitle" class="mt-1 p-3 border rounded w-full" required />
+        </div>
+        <div>
+          <label class="text-xs text-slate-600">Date <span class="text-rose-500">*</span></label>
+          <input id="editDate" type="date" class="mt-1 p-3 border rounded w-full" required />
+        </div>
+        <div>
+          <label class="text-xs text-slate-600">Description</label>
+          <textarea id="editDesc" rows="3" class="mt-1 p-3 border rounded w-full"></textarea>
+        </div>
+        <div>
+          <label class="text-xs text-slate-600">Replace file (optional)</label>
+          <input id="editFile" type="file" accept=".png,.jpg,.jpeg,.pdf" class="mt-1 w-full" />
+        </div>
+        <div class="flex gap-2 justify-end">
+          <button type="button" id="cancelEdit" class="px-4 py-2 rounded bg-slate-100">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded bg-emerald-600 text-white">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm Delete -->
+  <div id="confirmModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 z-50 p-4">
+    <div class="bg-white rounded-lg p-4 w-full max-w-md">
+      <h4 class="font-semibold">Delete document</h4>
+      <p id="confirmText" class="text-sm text-slate-600 mt-2">Are you sure?</p>
+      <div class="mt-4 flex justify-end gap-2">
+        <button id="confirmCancel" class="px-3 py-2 rounded bg-slate-100">Cancel</button>
+        <button id="confirmOk" class="px-3 py-2 rounded bg-rose-600 text-white">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+/* ============================
+   File-system-first documents page
+   - Uses File System Access API when available
+   - Persists DirectoryHandle in IndexedDB
+   - Falls back to IndexedDB storing blobs (if API not available)
+   - Metadata stored in localStorage (tfm_docs)
+   ============================ */
+
+(async function(){
+  // Redirect if not logged in
+  if(localStorage.getItem('tfm_logged_in') !== 'true') {
+    // but allow viewing if user wants to access otherwise you can force redirect
+    location.href = 'index.html';
+  }
+
+  // UI helpers
+  const $ = id => document.getElementById(id);
+  const DOC_KEY = 'tfm_docs';
+
+  // IndexedDB small wrapper for storing handles or blobs
+  const DB_NAME = 'finassist_files_db_v1';
+  const STORE_NAME = 'handles_or_blobs';
+  function openDB(){
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = function(e){
+        const db = e.target.result;
+        if(!db.objectStoreNames.contains(STORE_NAME)){
+          db.createObjectStore(STORE_NAME);
+        }
+      };
+      req.onsuccess = function(e){ resolve(e.target.result); };
+      req.onerror = function(e){ reject(e.target.error); };
+    });
+  }
+
+  async function idbPut(key, value){
+    const db = await openDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).put(value, key);
+      tx.oncomplete = () => res(true);
+      tx.onerror = (e) => rej(e.target.error);
+    });
+  }
+  async function idbGet(key){
+    const db = await openDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const rq = tx.objectStore(STORE_NAME).get(key);
+      rq.onsuccess = () => res(rq.result);
+      rq.onerror = (e) => rej(e.target.error);
+    });
+  }
+  async function idbDelete(key){
+    const db = await openDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(STORE_NAME,'readwrite');
+      const rq = tx.objectStore(STORE_NAME).delete(key);
+      rq.onsuccess = () => res(true);
+      rq.onerror = (e) => rej(e.target.error);
+    });
+  }
+
+  // Feature detection
+  const hasFileSystemAccess = 'showDirectoryPicker' in window;
+
+  // We'll try to persist the directory handle under key 'dirHandle' in IndexedDB
+  async function saveDirHandle(handle){
+    try {
+      await idbPut('dirHandle', handle);
+      return true;
+    } catch(e){ console.warn('saveDirHandle failed', e); return false; }
+  }
+  async function getDirHandle(){
+    try { return await idbGet('dirHandle'); } catch(e){ return null; }
+  }
+  async function clearDirHandle(){ try{ await idbDelete('dirHandle'); }catch(e){} }
+
+  // Helper: read metadata list
+  function readDocs(){ try{ return JSON.parse(localStorage.getItem(DOC_KEY)||'[]'); }catch(e){ return []; } }
+  function writeDocs(arr){ localStorage.setItem(DOC_KEY, JSON.stringify(arr||[])); }
+  function uid(){ return Date.now() + Math.floor(Math.random()*9999); }
+  function formatDate(d){ if(!d) return ''; try{ return new Date(d).toLocaleDateString(); }catch(e){ return d; } }
+  function escapeHtml(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+  function shorten(txt,n){ if(!txt) return ''; return txt.length>n ? txt.slice(0,n-1)+'…' : txt; }
+
+  // show folder status
+  async function updateFolderUI(){
+    const handle = await getDirHandle();
+    if(handle){
+      $('folderName').textContent = handle.name || 'Selected folder';
+      $('folderName').classList.remove('bg-gray-100');
+      $('folderName').classList.add('badge');
+    } else {
+      $('folderName').textContent = 'Not selected';
+      $('folderName').classList.add('badge');
+    }
+  }
+
+  // Try to request permission on a handle
+  async function verifyPermission(fileHandle, mode='readwrite') {
+    // Check whether permission was already granted. If so, return true.
+    if (await fileHandle.queryPermission({ mode }) === 'granted') return true;
+    // Request permission. If the user grants permission, return true.
+    if (await fileHandle.requestPermission({ mode }) === 'granted') return true;
+    // Otherwise, return false.
+    return false;
+  }
+
+  // Save a file to chosen device folder. Returns { success, path/fileName }.
+  async function saveFileToFolder(dirHandle, filename, blob){
+    try{
+      // create or get file handle
+      const fileHandle = await dirHandle.getFileHandle(filename, { create: true });
+      const ok = await verifyPermission(fileHandle, 'readwrite');
+      if(!ok) return { success:false, message:'No permission to write file' };
+      const writable = await fileHandle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return { success:true, fileName: filename, handle: fileHandle };
+    }catch(err){
+      console.error('saveFileToFolder error', err);
+      return { success:false, message: err && err.message || String(err) };
+    }
+  }
+
+  // When File System API is absent, we store blobs in IndexedDB keyed by doc id
+  async function saveBlobToIndexedDb(key, blob){
+    try{
+      await idbPut('blob_' + key, blob);
+      return true;
+    }catch(e){
+      console.error('saveBlobToIndexedDb failed', e);
+      return false;
+    }
+  }
+  async function getBlobFromIndexedDb(key){
+    try{
+      return await idbGet('blob_' + key);
+    }catch(e){ return null; }
+  }
+  async function deleteBlobFromIndexedDb(key){
+    try{ await idbDelete('blob_' + key); } catch(e){}
+  }
+
+  // Render list of docs
+  function renderList(filter=''){
+    const listArea = $('listArea');
+    const docs = readDocs().slice().reverse();
+    listArea.innerHTML = '';
+    let shown = 0;
+    docs.forEach(doc => {
+      if(filter && !doc.title.toLowerCase().includes(filter.toLowerCase())) return;
+      shown++;
+      const card = document.createElement('article');
+      card.className = 'card bg-white p-4 flex flex-col sm:flex-row justify-between gap-3 items-start';
+      card.innerHTML = `
+        <div class="flex-1">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="font-semibold">${escapeHtml(doc.title)}</div>
+              <div class="text-xs text-slate-500 mt-1">${doc.description ? escapeHtml(shorten(doc.description,120)) : '<span class="text-slate-400">— No description</span>'}</div>
+            </div>
+            <div class="text-xs text-slate-500">${formatDate(doc.date)}</div>
+          </div>
+          <div class="mt-3 text-xs text-slate-400">File: ${escapeHtml(doc.fileName || '—')} • ${doc.stored === 'folder' ? 'In device folder' : 'In browser'}</div>
+        </div>
+        <div class="flex-shrink-0 flex flex-col gap-2 items-end">
+          <button class="viewBtn px-3 py-1 rounded bg-slate-800 text-white text-sm" data-id="${doc.id}">View</button>
+          <button class="editBtn px-3 py-1 rounded bg-amber-100 text-sm" data-id="${doc.id}">Edit</button>
+          <button class="delBtn px-3 py-1 rounded bg-rose-100 text-sm" data-id="${doc.id}">Delete</button>
+        </div>
+      `;
+      listArea.appendChild(card);
+    });
+    $('emptyState').style.display = (shown === 0) ? 'block' : 'none';
+  }
+
+  // file saving flow when user submits form
+  $('docForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const title = $('docTitle').value.trim();
+    const desc = $('docDesc').value.trim();
+    const date = $('docDate').value;
+    const fileInput = $('docFile');
+    const file = fileInput.files && fileInput.files[0];
+    if(!title) return alert('Title is required');
+    if(!date) return alert('Date is required');
+    if(!file) return alert('Please attach a file');
+    const allowed = ['image/png','image/jpeg','application/pdf'];
+    if(!allowed.includes(file.type)) return alert('Only PNG, JPG and PDF are allowed.');
+
+    // Prepare metadata record
+    const id = uid();
+    const safeFileName = `${id}_${file.name.replace(/[\/\\]/g,'_')}`; // prefix id to avoid collisions
+    const meta = {
+      id,
+      title,
+      description: desc,
+      date,
+      fileName: file.name,
+      storedFileName: safeFileName,
+      fileType: file.type,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      stored: 'browser' // default, can be 'folder' if saved to device folder
+    };
+
+    // attempt device folder path if available
+    const dirHandle = await getDirHandle();
+    if(dirHandle){
+      // try saving to folder
+      const res = await saveFileToFolder(dirHandle, safeFileName, file);
+      if(res.success){
+        meta.stored = 'folder';
+        // optionally save the file handle for this file (not strictly necessary)
+        try { await idbPut('fileHandle_' + id, res.handle); } catch(e){ console.warn('cannot persist file handle', e); }
+      } else {
+        // fallback to storing in IndexedDB
+        await saveBlobToIndexedDb(id, file);
+        meta.stored = 'browser';
+      }
+    } else {
+      // fallback: save blob in IndexedDB
+      await saveBlobToIndexedDb(id, file);
+      meta.stored = 'browser';
+    }
+
+    // Save metadata to localStorage list
+    const arr = readDocs();
+    arr.push(meta);
+    writeDocs(arr);
+
+    // reset form and UI
+    this.reset();
+    setDefaultDate($('docDate'));
+    showAddSaved();
+    renderList($('searchInput').value.trim());
+  });
+
+  function showAddSaved(){ const el = $('addMsg'); el.classList.remove('hidden'); setTimeout(()=> el.classList.add('hidden'), 1800); }
+
+  $('clearForm').addEventListener('click', function(){ document.getElementById('docForm').reset(); setDefaultDate($('docDate')); });
+
+  // default date if empty
+  function setDefaultDate(el){ const today = new Date().toISOString().slice(0,10); if(!el.value) el.value = today; }
+  setDefaultDate($('docDate'));
+
+  // handle delegation for view/edit/delete
+  document.addEventListener('click', function(ev){
+    const v = ev.target.closest('.viewBtn');
+    const e = ev.target.closest('.editBtn');
+    const d = ev.target.closest('.delBtn');
+    if(v) openView(Number(v.dataset.id));
+    if(e) openEdit(Number(e.dataset.id));
+    if(d) confirmDelete(Number(d.dataset.id));
+  });
+
+  // Open View: reads file from folder if stored there, otherwise from IndexedDB blob
+  async function openView(id){
+    const docs = readDocs();
+    const doc = docs.find(x=> x.id === id);
+    if(!doc) return alert('Document not found');
+    $('viewTitle').textContent = doc.title;
+    $('viewDate').textContent = formatDate(doc.date);
+    const body = $('viewBody'); body.innerHTML = '';
+    try{
+      if(doc.stored === 'folder'){
+        // read from folder
+        const dirHandle = await getDirHandle();
+        if(!dirHandle) {
+          body.innerHTML = '<p class="text-sm text-rose-600">Folder not available. Re-select folder to access device files, or use import.</p>';
+        } else {
+          try {
+            const fileHandle = await dirHandle.getFileHandle(doc.storedFileName);
+            const file = await fileHandle.getFile();
+            displayFileInView(file, body);
+            $('viewDownload').onclick = ()=> {
+              file.arrayBuffer().then(buf => {
+                const blob = new Blob([buf], { type: file.type });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = doc.fileName; a.click();
+                URL.revokeObjectURL(a.href);
+              });
+            };
+          } catch(err){
+            body.innerHTML = '<p class="text-sm text-rose-600">Unable to load file from chosen folder. It may have been moved. Re-select folder or import file.</p>';
+          }
+        }
+      } else {
+        // read blob from IndexedDB
+        const blob = await getBlobFromIndexedDb(id);
+        if(!blob){
+          body.innerHTML = '<p class="text-sm text-rose-600">File missing. Consider re-uploading or importing backup.</p>';
+        } else {
+          displayFileInView(blob, body, doc.fileName);
+          $('viewDownload').onclick = ()=> {
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = doc.fileName; a.click(); URL.revokeObjectURL(a.href);
+          };
+        }
+      }
+    }catch(err){
+      console.error(err);
+      body.innerHTML = '<p class="text-sm text-rose-600">Error loading file.</p>';
+    }
+    openModal('viewModal');
+  }
+
+  // Helper: display blob/file in view modal
+  function displayFileInView(fileOrBlob, container, hintName){
+    container.innerHTML = '';
+    const type = (fileOrBlob.type || '').toLowerCase();
+    if(type.startsWith('image/')){
+      const img = document.createElement('img'); img.src = URL.createObjectURL(fileOrBlob); img.alt = hintName || 'image'; img.className = 'w-full h-auto rounded';
+      container.appendChild(img);
+    } else if(type === 'application/pdf'){
+      const iframe = document.createElement('iframe'); iframe.src = URL.createObjectURL(fileOrBlob); iframe.className = 'w-full h-[70vh] rounded border'; container.appendChild(iframe);
+    } else {
+      const p = document.createElement('p'); p.textContent = 'Preview not available for this file type.'; container.appendChild(p);
+    }
+  }
+
+  // open edit modal
+  function openEdit(id){
+    const docs = readDocs(); const doc = docs.find(x=> x.id === id);
+    if(!doc) return alert('Document not found');
+    $('editId').value = doc.id;
+    $('editTitle').value = doc.title;
+    $('editDate').value = doc.date;
+    $('editDesc').value = doc.description || '';
+    $('editFile').value = '';
+    openModal('editModal');
+  }
+
+  // edit submit handling
+  $('editForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const id = Number($('editId').value);
+    const title = $('editTitle').value.trim(); if(!title) return alert('Title required');
+    const date = $('editDate').value; if(!date) return alert('Date required');
+    const desc = $('editDesc').value.trim();
+    const fileInput = $('editFile'); const file = fileInput.files && fileInput.files[0];
+
+    const docs = readDocs();
+    const idx = docs.findIndex(d=> d.id === id);
+    if(idx === -1) return alert('Not found');
+
+    const doc = docs[idx];
+    doc.title = title;
+    doc.date = date;
+    doc.description = desc;
+    doc.updatedAt = new Date().toISOString();
+
+    if(file){
+      // replace file: attempt folder write if available
+      const safeFileName = `${id}_${file.name.replace(/[\/\\]/g,'_')}`;
+      const dirHandle = await getDirHandle();
+      if(dirHandle){
+        const res = await saveFileToFolder(dirHandle, safeFileName, file);
+        if(res.success){
+          // remove old folder file if present (best effort)
+          if(doc.stored === 'folder' && doc.storedFileName && doc.storedFileName !== safeFileName){
+            try { await dirHandle.removeEntry(doc.storedFileName); } catch(e){ /* ignore */ }
+          }
+          doc.stored = 'folder';
+          doc.fileName = file.name;
+          doc.storedFileName = safeFileName;
+          doc.fileType = file.type;
+          try { await idbPut('fileHandle_' + id, res.handle); } catch(e) {}
+        } else {
+          // fallback: store new blob in IndexedDB and mark stored as browser
+          await saveBlobToIndexedDb(id, file);
+          doc.stored = 'browser';
+          doc.fileName = file.name;
+          doc.storedFileName = null;
+          doc.fileType = file.type;
+        }
+      } else {
+        // no folder: save in IndexedDB
+        await saveBlobToIndexedDb(id, file);
+        doc.stored = 'browser';
+        doc.fileName = file.name;
+        doc.storedFileName = null;
+        doc.fileType = file.type;
+      }
+    }
+
+    docs[idx] = doc;
+    writeDocs(docs);
+    closeModal('editModal');
+    renderList($('searchInput').value.trim());
+  });
+
+  $('cancelEdit').addEventListener('click', ()=> closeModal('editModal'));
+
+  // delete flow
+  let pendingDeleteId = null;
+  function confirmDelete(id){
+    pendingDeleteId = id;
+    $('confirmText').textContent = 'This will delete the selected document from your device/browser storage. This cannot be undone. Continue?';
+    openModal('confirmModal');
+  }
+  $('confirmCancel').addEventListener('click', ()=> { pendingDeleteId = null; closeModal('confirmModal'); });
+  $('confirmOk').addEventListener('click', async ()=> {
+    if(!pendingDeleteId) return closeModal('confirmModal');
+    const id = pendingDeleteId;
+    // remove metadata
+    let docs = readDocs();
+    const idx = docs.findIndex(d=> d.id === id);
+    if(idx !== -1){
+      const doc = docs[idx];
+      if(doc.stored === 'browser'){
+        await deleteBlobFromIndexedDb(id);
+      } else if(doc.stored === 'folder'){
+        // delete file from folder if possible
+        const dirHandle = await getDirHandle();
+        if(dirHandle && doc.storedFileName){
+          try { await dirHandle.removeEntry(doc.storedFileName); } catch(e){ console.warn('removeEntry failed', e); }
+        }
+        // also delete any persisted fileHandle entry
+        try { await idbDelete('fileHandle_' + id); } catch(e){}
+      }
+      docs.splice(idx,1);
+      writeDocs(docs);
+    }
+    pendingDeleteId = null;
+    closeModal('confirmModal');
+    renderList($('searchInput').value.trim());
+  });
+
+  // modal helpers
+  function openModal(id){ const m = $(id); if(!m) return; m.classList.remove('hidden'); document.body.classList.add('modal-open'); }
+  function closeModal(id){ const m = $(id); if(!m) return; m.classList.add('hidden'); document.body.classList.remove('modal-open'); }
+
+  // choose folder button
+  $('chooseFolderBtn').addEventListener('click', async function(){
+    if(!hasFileSystemAccess) return alert('Your browser does not support choosing a folder. This feature works in Chromium-based browsers (Chrome/Edge).');
+    try {
+      const dirHandle = await window.showDirectoryPicker();
+      // request persistent permission
+      const ok = await verifyPermission(dirHandle, 'readwrite');
+      if(!ok) return alert('Permission to the chosen folder was not granted.');
+      // persist handle in IndexedDB
+      await saveDirHandle(dirHandle);
+      await updateFolderUI();
+      alert('Folder selected and saved. Files will be written to this folder when you add documents.');
+    } catch(err){
+      console.error(err);
+      alert('Folder selection was cancelled or failed.');
+    }
+  });
+
+  // when page loads, try to restore folder handle
+  await updateFolderUI();
+
+  // search
+  $('searchInput').addEventListener('input', function(){ renderList(this.value.trim()); });
+
+  // import/export JSON
+  $('exportJsonBtn').addEventListener('click', function(){
+    const payload = { docs: readDocs() };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'finassist-docs-backup.json'; a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  $('importJsonBtn').addEventListener('click', function(){
+    const input = document.createElement('input'); input.type = 'file'; input.accept = '.json,application/json';
+    input.onchange = function(){
+      const f = input.files && input.files[0]; if(!f) return;
+      const r = new FileReader();
+      r.onload = function(ev){
+        try {
+          const payload = JSON.parse(ev.target.result);
+          const incoming = payload.docs || [];
+          if(!Array.isArray(incoming)) return alert('Invalid file.');
+          const existing = readDocs();
+          const existingIds = new Set(existing.map(d=> d.id));
+          incoming.forEach(d=>{
+            while(existingIds.has(d.id)) d.id = uid();
+            existingIds.add(d.id);
+            existing.push(d);
+            // Note: imported docs that point to folder won't have handles available.
+          });
+          writeDocs(existing);
+          alert('Imported ' + incoming.length + ' documents.');
+          renderList($('searchInput').value.trim());
+        } catch(err){ alert('Invalid JSON file.'); }
+      };
+      r.readAsText(f);
+    };
+    input.click();
+  });
+
+  // initial render
+  document.addEventListener('DOMContentLoaded', function(){ renderList(); setTimeout(()=> document.querySelectorAll('.fade-up').forEach(el=> el.classList.add('show')), 80); });
+
+  // keep UI in sync across tabs
+  window.addEventListener('storage', function(e){
+    if(e.key === DOC_KEY) renderList($('searchInput').value.trim());
+  });
+
+})();
+  </script>
+</body>
+</html>

@@ -7,7 +7,14 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto} .card-appear{transform:translateY(8px);opacity:0;animation:comeUp .36s forwards}@keyframes comeUp{to{transform:none;opacity:1}}</style>
+  <style>
+    html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}
+    .card-appear{transform:translateY(8px);opacity:0;animation:comeUp .36s forwards}
+    @keyframes comeUp{to{transform:none;opacity:1}}
+    .avatar-btn { width:40px; height:40px; border-radius:9999px; overflow:hidden; display:inline-block; border:2px solid rgba(2,6,23,0.06); cursor:pointer; }
+    .avatar-btn img { width:100%; height:100%; object-fit:cover; display:block; }
+    .avatar-placeholder { display:flex; align-items:center; justify-content:center; background:#e6eef8; color:#0b1b2a; font-weight:600; }
+  </style>
 
   <!-- Branding -->
   <link rel="icon" type="image/png" href="favicon.png">
@@ -26,8 +33,15 @@
           <p class="text-sm text-slate-500">Welcome back, <span data-fiuser>Thajudheen</span></p>
         </div>
       </div>
-      <div>
+
+      <div class="flex items-center gap-3">
+        <!-- Logout button -->
         <button id="logoutBtn" class="px-3 py-2 rounded-md bg-slate-100 border">Logout</button>
+
+        <!-- Profile avatar (to the right of logout) -->
+        <button id="profileBtn" title="Open My Account" class="avatar-btn" aria-label="Profile — open my account">
+          <img id="profileImg" src="favicon.png" alt="Profile">
+        </button>
       </div>
     </header>
 
@@ -71,61 +85,20 @@
   <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
     <div class="flex justify-around p-2">
       <a href="dashboard.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Dashboard</div></a>
-      <a href="expenses.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Expenses</div></a>
-      <a href="incomes.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Incomes</div></a>
       <a href="viewbyname.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">By Name</div></a>
+      <a href="mydocuments.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Documents</div></a>
       <a href="settings.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Settings</div></a>
     </div>
   </nav>
 
+  <!-- Shared app utilities -->
   <script src="app.js"></script>
-  <script src="app.js"></script>
-<script>
-  // ensure logged-in
-  if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
-
-  // update stats (your existing stat calc code likely exists; keep it)
-  function refreshStats(){
-    const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
-    const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
-    const totalIncome = incomes.reduce((s,i)=> s + Number(i.amount||0),0);
-    const totalExpense = expenses.reduce((s,e)=> s + Number(e.amount||0),0);
-    document.getElementById('totalIncome').textContent = '₹ ' + totalIncome.toLocaleString();
-    document.getElementById('totalExpense').textContent = '₹ ' + totalExpense.toLocaleString();
-    document.getElementById('netBalance').textContent = '₹ ' + (totalIncome - totalExpense).toLocaleString();
-  }
-  refreshStats();
-
-  // update welcome name from profile
-  function applyProfileName(p){
-    const full = (p && p.firstName) ? (p.firstName + (p.lastName ? ' ' + p.lastName : '')) : 'Thajudheen';
-    // update header text nodes if present
-    document.querySelectorAll('[data-fiuser]').forEach(el => el.textContent = full);
-    // update any static welcome text
-    const welcomeTextEls = document.querySelectorAll('.welcome-name');
-    welcomeTextEls.forEach(el => el.textContent = full);
-    // also the toast content if exists
-    const toast = document.getElementById('welcomeToast');
-    if(toast) toast.textContent = 'Welcome, ' + full + '!';
-  }
-
-  // initial
-  try{ applyProfileName(JSON.parse(localStorage.getItem('tfm_profile')||'{}')); }catch(e){}
-
-  // listen for changes via app.js helper event
-  window.addEventListener('tfm:profileChanged', function(e){
-    try{ applyProfileName(e.detail || JSON.parse(localStorage.getItem('tfm_profile')||'{}')); } catch(er){}
-  });
-
-  // show toast once
-  const t = document.getElementById('welcomeToast');
-  if(t){ setTimeout(()=> { t.classList.remove('opacity-0'); t.classList.remove('pointer-events-none'); t.style.opacity=1; }, 200);
-    setTimeout(()=> { t.style.opacity=0; }, 3200);
-  }
-</script>
 
   <script>
-    if(localStorage.getItem('tfm_logged_in') !== 'true') { location.href = 'index.html'; }
+    // ensure logged-in
+    if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
+
+    // Stats functions
     function formatRupee(n){ return '₹ ' + Number(n||0).toLocaleString(); }
     function calcStats(){
       const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
@@ -136,11 +109,80 @@
       document.getElementById('totalExpense').textContent = formatRupee(totalExpense);
       document.getElementById('netBalance').textContent = formatRupee(totalIncome - totalExpense);
     }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+      localStorage.removeItem('tfm_logged_in');
+      location.href = 'index.html';
+    });
+
+    // Welcome toast
     const toast = document.getElementById('welcomeToast');
     setTimeout(()=>{ toast.classList.add('opacity-100'); }, 200);
     setTimeout(()=>{ toast.classList.remove('opacity-100'); }, 3200);
-    document.getElementById('logoutBtn').addEventListener('click', ()=>{ localStorage.removeItem('tfm_logged_in'); location.href = 'index.html'; });
+
+    // Update stats and initial UI
     calcStats();
+
+    // ---------- PROFILE AVATAR HANDLING ----------
+    const profileImg = document.getElementById('profileImg');
+    const profileBtn = document.getElementById('profileBtn');
+
+    // Helper to build initials fallback if no avatar data - optional
+    function initialsFromProfile(p){
+      try{
+        const f = (p.firstName || '').trim();
+        const l = (p.lastName || '').trim();
+        const initials = ((f[0]||'') + (l[0]||'')).toUpperCase() || (f.substring(0,2)||'').toUpperCase();
+        return initials || '—';
+      }catch(e){ return '—'; }
+    }
+
+    function applyProfileToAvatar(p){
+      // prefer avatarDataUrl
+      if(p && p.avatarDataUrl){
+        profileImg.src = p.avatarDataUrl;
+        profileImg.alt = (p.firstName || 'Profile');
+      } else {
+        // fallback to favicon
+        profileImg.src = 'favicon.png';
+        profileImg.alt = ( (p && ((p.firstName||'') + ' ' + (p.lastName||''))) || 'Profile' );
+      }
+    }
+
+    // initial apply
+    try {
+      const p = JSON.parse(localStorage.getItem('tfm_profile') || '{}');
+      applyProfileToAvatar(p);
+      // also apply name elsewhere
+      const full = (p && p.firstName) ? (p.firstName + (p.lastName ? ' ' + p.lastName : '')) : 'Thajudheen';
+      document.querySelectorAll('[data-fiuser]').forEach(el => el.textContent = full);
+      if(toast) toast.textContent = 'Welcome, ' + full + '!';
+    } catch(e) { console.warn('profile read error', e); }
+
+    // Listen for profile changes via custom event dispatched by app.js
+    window.addEventListener('tfm:profileChanged', function(e){
+      try {
+        const p = e.detail || JSON.parse(localStorage.getItem('tfm_profile')||'{}');
+        applyProfileToAvatar(p);
+        const full = (p && p.firstName) ? (p.firstName + (p.lastName ? ' ' + p.lastName : '')) : 'Thajudheen';
+        document.querySelectorAll('[data-fiuser]').forEach(el => el.textContent = full);
+        if(toast) toast.textContent = 'Welcome, ' + full + '!';
+      } catch(err){ console.warn(err); }
+    });
+
+    // Click avatar to open My Account
+    profileBtn.addEventListener('click', function(){
+      // open myaccount page
+      location.href = 'myaccount.html';
+    });
+
+    // Also keep stats refreshed when localStorage changes (other tabs)
+    window.addEventListener('storage', function(e){
+      if(e.key === 'tfm_incomes' || e.key === 'tfm_expenses' || e.key === 'tfm_profile'){
+        calcStats();
+      }
+    });
   </script>
 </body>
 </html>
