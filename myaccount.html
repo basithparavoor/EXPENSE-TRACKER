@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Account — FinAssist</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto} .card-appear{transform:translateY(8px);opacity:0;animation:comeUp .36s forwards}@keyframes comeUp{to{transform:none;opacity:1}}</style>
+
+  <!-- Branding -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <meta property="og:image" content="logo.png">
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900 pb-28">
+  <div class="max-w-3xl mx-auto p-4">
+    <header class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="FinAssist" class="h-8 w-auto">
+        <div>
+          <h2 class="text-lg font-semibold">My Account</h2>
+          <p class="text-sm text-slate-500">Manage your profile, addresses, and login credentials</p>
+        </div>
+      </div>
+      <div><a href="dashboard.html" class="px-3 py-2 bg-white rounded shadow">Back</a></div>
+    </header>
+
+    <div class="card-appear bg-white p-4 rounded-2xl shadow space-y-4">
+      <!-- Top: Avatar + name -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+        <div class="flex flex-col items-center sm:items-start gap-3">
+          <div class="w-28 h-28 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center">
+            <img id="avatarPreview" src="favicon.png" alt="avatar" class="w-full h-full object-cover">
+          </div>
+          <input id="avatarInput" type="file" accept="image/*" class="text-xs" />
+          <div class="text-xs text-slate-500">PNG/JPG — stored locally</div>
+        </div>
+
+        <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-slate-600">First name <span class="text-rose-500">*</span></label>
+            <input id="firstName" required class="mt-1 w-full p-3 border rounded" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">Last name <span class="text-rose-500">*</span></label>
+            <input id="lastName" required class="mt-1 w-full p-3 border rounded" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">Phone <span class="text-rose-500">*</span></label>
+            <input id="phone" required class="mt-1 w-full p-3 border rounded" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">WhatsApp number <span class="text-rose-500">*</span></label>
+            <input id="whatsapp" required class="mt-1 w-full p-3 border rounded" />
+            <label class="inline-flex items-center gap-2 mt-2 text-xs">
+              <input id="sameAsPhone" type="checkbox" class="h-4 w-4">
+              <span>WhatsApp number is same as phone</span>
+            </label>
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">Email <span class="text-rose-500">*</span></label>
+            <input id="email" type="email" required class="mt-1 w-full p-3 border rounded" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">Aadhaar number <span class="text-rose-500">*</span></label>
+            <input id="aadhaar" required class="mt-1 w-full p-3 border rounded" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Addresses -->
+      <div class="border-t pt-4">
+        <h3 class="font-semibold">Addresses</h3>
+        <div id="addressesList" class="space-y-3 mt-3"></div>
+        <button id="addAddressBtn" class="mt-3 px-3 py-2 rounded bg-slate-100">+ Add Address</button>
+      </div>
+
+      <!-- Location fields and PAN -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <label class="text-xs text-slate-600">Country <span class="text-rose-500">*</span></label>
+          <select id="country" class="mt-1 p-3 border rounded">
+            <option value="">Select country</option>
+            <option value="India" selected>India</option>
+            <option value="United Arab Emirates">United Arab Emirates</option>
+            <option value="United States">United States</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-600">State <span class="text-rose-500">*</span></label>
+          <select id="state" class="mt-1 p-3 border rounded">
+            <option value="">Select state</option>
+            <option>Kerala</option>
+            <option>Tamil Nadu</option>
+            <option>Karnataka</option>
+            <option>Maharashtra</option>
+            <option>West Bengal</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-600">City <span class="text-rose-500">*</span></label>
+          <input id="city" class="mt-1 p-3 border rounded" />
+        </div>
+        <div>
+          <label class="text-xs text-slate-600">Pin Code <span class="text-rose-500">*</span></label>
+          <input id="pincode" class="mt-1 p-3 border rounded" />
+        </div>
+        <div>
+          <label class="text-xs text-slate-600">PAN (if available)</label>
+          <input id="pan" class="mt-1 p-3 border rounded" />
+        </div>
+      </div>
+
+      <!-- Account & Credentials (moved here from Settings) -->
+      <div class="border-t pt-4">
+        <h3 class="font-semibold">Account & Credentials</h3>
+        <p class="text-xs text-slate-500 mt-1">Your login credentials are stored locally in the browser.</p>
+
+        <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+          <div>
+            <label class="text-xs text-slate-600">Username</label>
+            <input id="credUser" class="mt-1 p-3 border rounded w-full" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">Password</label>
+            <div class="relative">
+              <input id="credPass" type="password" class="mt-1 p-3 border rounded w-full" />
+              <button id="togglePass" type="button" class="absolute right-2 top-2 text-xs px-2 py-1 bg-slate-100 rounded">Show</button>
+            </div>
+          </div>
+          <div class="sm:col-span-2 flex gap-2">
+            <button id="saveProfileBtn" class="px-4 py-2 bg-amber-500 text-slate-900 rounded font-semibold">Save Profile</button>
+            <button id="resetProfileBtn" class="px-4 py-2 bg-slate-100 rounded">Reset to defaults</button>
+            <div id="profileSaved" class="ml-auto text-sm text-emerald-600 hidden">Saved ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-6 flex justify-center">
+      <div class="bg-white p-2 rounded-full shadow text-xs flex items-center gap-2">
+        <img src="favicon.png" class="h-4 w-4" alt="FinAssist">
+        <a class="text-slate-700" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">© copyright basith paravoor</a>
+      </div>
+    </footer>
+  </div>
+
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t shadow sm:hidden">
+    <div class="flex justify-around p-2">
+      <a href="dashboard.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Dashboard</div></a>
+      <a href="expenses.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Expenses</div></a>
+      <a href="incomes.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Incomes</div></a>
+      <a href="viewbyname.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">By Name</div></a>
+      <a href="settings.html" class="text-slate-700 text-center py-2"><div class="text-xs font-semibold">Settings</div></a>
+    </div>
+  </nav>
+
+  <script src="app.js"></script>
+  <script>
+    // require login
+    if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
+
+    // helpers
+    const $ = id => document.getElementById(id);
+
+    // address helper
+    function makeAddressCard(address = {}, idx){
+      const wrapper = document.createElement('div');
+      wrapper.className = 'p-3 bg-slate-50 rounded border relative';
+      wrapper.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-slate-600">Address Line 1 <span class="text-rose-500">*</span></label>
+            <input data-addr-index="${idx}" data-addr-field="line1" class="addrField mt-1 p-2 border rounded w-full" value="${address.line1||''}" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">Address Line 2</label>
+            <input data-addr-index="${idx}" data-addr-field="line2" class="addrField mt-1 p-2 border rounded w-full" value="${address.line2||''}" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">District / Area</label>
+            <input data-addr-index="${idx}" data-addr-field="area" class="addrField mt-1 p-2 border rounded w-full" value="${address.area||''}" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-600">Landmark</label>
+            <input data-addr-index="${idx}" data-addr-field="landmark" class="addrField mt-1 p-2 border rounded w-full" value="${address.landmark||''}" />
+          </div>
+        </div>
+        <div class="mt-2 flex justify-end gap-2">
+          <button data-addr-remove="${idx}" class="removeAddr px-3 py-1 text-xs rounded bg-rose-100">Remove</button>
+        </div>
+      `;
+      return wrapper;
+    }
+
+    // load profile into UI
+    function loadProfileToUI(){
+      const p = window.getProfile() || {};
+      $('avatarPreview').src = p.avatarDataUrl || 'favicon.png';
+      $('firstName').value = p.firstName || '';
+      $('lastName').value = p.lastName || '';
+      $('phone').value = p.phone || '';
+      $('whatsapp').value = p.whatsapp || '';
+      $('sameAsPhone').checked = !!p.sameAsPhone;
+      $('email').value = p.email || '';
+      $('aadhaar').value = p.aadhaar || '';
+      $('pan').value = p.pan || '';
+      $('country').value = (p.addresses && p.addresses[0] && p.addresses[0].country) || 'India';
+      $('state').value = (p.addresses && p.addresses[0] && p.addresses[0].state) || '';
+      $('city').value = (p.addresses && p.addresses[0] && p.addresses[0].city) || '';
+      $('pincode').value = (p.addresses && p.addresses[0] && p.addresses[0].pincode) || '';
+
+      // credentials
+      const creds = JSON.parse(localStorage.getItem('tfm_credentials')||'{}');
+      $('credUser').value = creds.username || '';
+      $('credPass').value = creds.password || '';
+
+      // addresses list
+      const list = $('addressesList'); list.innerHTML = '';
+      const addrs = p.addresses || [];
+      if(addrs.length === 0) addrs.push({line1:'',line2:'',area:'',landmark:'',country:$('country').value, state:$('state').value, city:$('city').value, pincode:$('pincode').value});
+      addrs.forEach((a, idx) => list.appendChild(makeAddressCard(a, idx)));
+      attachAddressListeners();
+    }
+
+    function attachAddressListeners(){
+      // remove buttons
+      document.querySelectorAll('.removeAddr').forEach(btn => btn.addEventListener('click', (ev)=>{
+        const idx = Number(ev.target.getAttribute('data-addr-remove'));
+        const p = window.getProfile() || {};
+        p.addresses = p.addresses || [];
+        p.addresses.splice(idx, 1);
+        window.saveProfile(p);
+        loadProfileToUI();
+        showSavedBadge();
+      }));
+      // change inputs
+      document.querySelectorAll('.addrField').forEach(inp => inp.addEventListener('input', ()=>{
+        // live update underlying profile object
+        const idx = Number(inp.getAttribute('data-addr-index'));
+        const field = inp.getAttribute('data-addr-field');
+        const p = window.getProfile() || {};
+        p.addresses = p.addresses || [];
+        p.addresses[idx] = p.addresses[idx] || {};
+        p.addresses[idx][field] = inp.value;
+        window.saveProfile(p);
+      }));
+    }
+
+    // when checkbox checked copy phone->whatsapp
+    $('sameAsPhone').addEventListener('change', function(){
+      if(this.checked){
+        $('whatsapp').value = $('phone').value;
+      }
+    });
+
+    // update whatsapp live if sameAsPhone checked
+    $('phone').addEventListener('input', function(){ if($('sameAsPhone').checked) $('whatsapp').value = this.value; });
+
+    // avatar upload
+    $('avatarInput').addEventListener('change', function(){
+      const f = this.files && this.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = function(e){
+        $('avatarPreview').src = e.target.result;
+        const p = window.getProfile() || {};
+        p.avatarDataUrl = e.target.result;
+        window.saveProfile(p);
+        showSavedBadge();
+      };
+      reader.readAsDataURL(f);
+    });
+
+    // add address
+    $('addAddressBtn').addEventListener('click', function(){
+      const p = window.getProfile() || {};
+      p.addresses = p.addresses || [];
+      p.addresses.push({line1:'',line2:'',area:'',landmark:'',country:$('country').value, state:$('state').value, city:$('city').value, pincode:''});
+      window.saveProfile(p);
+      loadProfileToUI();
+      showSavedBadge();
+    });
+
+    // show/hide password
+    $('togglePass').addEventListener('click', function(){
+      const inp = $('credPass');
+      if(inp.type === 'password'){ inp.type = 'text'; this.textContent = 'Hide'; }
+      else { inp.type = 'password'; this.textContent = 'Show'; }
+    });
+
+    // save profile
+    $('saveProfileBtn').addEventListener('click', function(){
+      // validate required fields
+      const first = $('firstName').value.trim();
+      const last = $('lastName').value.trim();
+      const phone = $('phone').value.trim();
+      const whats = $('whatsapp').value.trim();
+      const email = $('email').value.trim();
+      const aadhaar = $('aadhaar').value.trim();
+      if(!first || !last || !phone || !whats || !email || !aadhaar){
+        return alert('Please fill all required fields (First, Last, Phone, WhatsApp, Email, Aadhaar).');
+      }
+
+      const profile = window.getProfile() || {};
+      profile.firstName = first;
+      profile.lastName = last;
+      profile.phone = phone;
+      profile.whatsapp = whats;
+      profile.sameAsPhone = $('sameAsPhone').checked;
+      profile.email = email;
+      profile.aadhaar = aadhaar;
+      profile.pan = $('pan').value.trim();
+      profile.avatarDataUrl = $('avatarPreview').src || '';
+      // addresses saved via address fields (also update main fields)
+      profile.addresses = [];
+      document.querySelectorAll('.addrField').forEach(inp=>{
+        const idx = Number(inp.getAttribute('data-addr-index'));
+        const field = inp.getAttribute('data-addr-field');
+        profile.addresses[idx] = profile.addresses[idx] || {};
+        profile.addresses[idx][field] = inp.value;
+        // copy common fields
+        profile.addresses[idx].country = $('country').value;
+        profile.addresses[idx].state = $('state').value;
+        profile.addresses[idx].city = $('city').value;
+        profile.addresses[idx].pincode = $('pincode').value;
+      });
+
+      // save credentials
+      const creds = { username: $('credUser').value.trim(), password: $('credPass').value || '' };
+      if(!creds.username || !creds.password) {
+        if(!confirm('Username or password empty — do you want to save empty credentials?')) return;
+      }
+      localStorage.setItem('tfm_credentials', JSON.stringify(creds));
+
+      // persist profile
+      window.saveProfile(profile);
+
+      showSavedBadge();
+      // also refresh datalist names used by income/expense forms (if name changed)
+      window.refreshNamesDatalist && window.refreshNamesDatalist();
+    });
+
+    // reset profile (confirm)
+    $('resetProfileBtn').addEventListener('click', function(){
+      if(!confirm('Reset profile to empty?')) return;
+      localStorage.removeItem('tfm_profile');
+      loadProfileToUI();
+      alert('Profile reset. Note: credentials remain until you change them.');
+    });
+
+    function showSavedBadge(){
+      $('profileSaved').classList.remove('hidden');
+      setTimeout(()=> $('profileSaved').classList.add('hidden'), 2200);
+    }
+
+    // when profile changes in other tab, update
+    window.listenForProfileChange(function(p){
+      // update dashboard and local UI
+      loadProfileToUI();
+      // also update the small name in header if present on other pages via storage event
+      const name = (p && p.firstName) ? (p.firstName + (p.lastName ? ' ' + p.lastName : '')) : '';
+      try{
+        // if dashboard element exists update it
+        const el = document.querySelector('[data-fiuser]');
+        if(el) el.textContent = name || '—';
+      }catch(e){}
+    });
+
+    // initial load
+    document.addEventListener('DOMContentLoaded', function(){ loadProfileToUI(); });
+  </script>
+</body>
+</html>

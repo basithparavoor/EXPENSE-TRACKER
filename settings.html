@@ -1,91 +1,39 @@
 <!doctype html>
 <html lang="en" class="antialiased">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Settings — FinAssist</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#005f4b">
-  <style>
-    html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}
-    /* small, subtle card animation */
-    .card-appear { transform: translateY(8px); opacity: 0; animation: comeUp .36s forwards; }
-    @keyframes comeUp { to { transform: translateY(0); opacity: 1; } }
-    /* prettier scrollbar for long lists (desktop) */
-    ::-webkit-scrollbar { height: 8px; width: 8px; }
-    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 999px; }
-  </style>
-
-  <!-- FinAssist Branding -->
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="shortcut icon" href="favicon.png">
-  <meta property="og:image" content="logo.png">
+  <style>html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto} .card-appear{transform:translateY(8px);opacity:0;animation:comeUp .36s forwards}@keyframes comeUp{to{transform:none;opacity:1}}</style>
 </head>
-
 <body class="bg-slate-50 min-h-screen text-slate-900">
   <div class="max-w-3xl mx-auto p-4">
-    <!-- Header -->
     <header class="flex items-center justify-between gap-4 mb-4">
       <div class="flex items-center gap-3">
         <img src="logo.png" alt="FinAssist" class="h-10 w-auto">
         <div>
           <h1 class="text-2xl font-semibold leading-tight">Settings</h1>
-          <p class="text-sm text-slate-500">Customize FinAssist to your style. Changes apply instantly.</p>
+          <p class="text-sm text-slate-500">Theme, view and data management</p>
         </div>
       </div>
-      <a href="dashboard.html" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white shadow text-sm">
-        <!-- back icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0L2.586 11a1 1 0 010-1.414l3.707-3.707a1 1 0 111.414 1.414L5.414 10l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
-        Back
-      </a>
+      <a href="dashboard.html" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white shadow text-sm">Back</a>
     </header>
 
-    <!-- layout: grid - main column + side info for desktop -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <!-- left column: controls -->
+    <div class="grid lg:grid-cols-3 gap-4">
       <div class="lg:col-span-2 space-y-4">
-        <!-- Account & Credentials -->
-        <section class="bg-white rounded-2xl p-4 shadow card-appear">
-          <div class="flex items-start justify-between">
-            <div>
-              <h2 class="text-lg font-semibold">Account & Credentials</h2>
-              <p class="text-sm text-slate-500 mt-1">Change your login username and password used locally (stored in browser).</p>
-            </div>
-            <div class="text-sm text-slate-400">Local Only</div>
-          </div>
-
-          <form id="credForm" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
-            <div>
-              <label class="text-xs text-slate-600">Username</label>
-              <input id="setUsername" type="text" placeholder="9526220564" class="mt-1 w-full p-3 border rounded-lg bg-slate-50" />
-            </div>
-            <div>
-              <label class="text-xs text-slate-600">Password</label>
-              <input id="setPassword" type="password" placeholder="••••••••" class="mt-1 w-full p-3 border rounded-lg bg-slate-50" />
-            </div>
-
-            <div class="sm:col-span-2 flex gap-2">
-              <button type="submit" class="px-4 py-2 rounded-lg bg-amber-500 text-slate-900 font-semibold shadow">Save</button>
-              <button id="resetCredBtn" type="button" class="px-4 py-2 rounded-lg bg-slate-100">Reset</button>
-              <div id="credSaved" class="ml-auto text-sm text-emerald-600 hidden">Saved ✓</div>
-            </div>
-          </form>
-        </section>
-
         <!-- Theme & Appearance -->
         <section class="bg-white rounded-2xl p-4 shadow card-appear">
           <div class="flex items-center justify-between">
             <div>
               <h2 class="text-lg font-semibold">Theme & Appearance</h2>
-              <p class="text-sm text-slate-500 mt-1">Toggle theme, adjust font size and family. Changes apply across the app.</p>
+              <p class="text-sm text-slate-500 mt-1">Toggle dark mode and adjust typography.</p>
             </div>
             <div class="text-sm text-slate-400">Preview</div>
           </div>
 
           <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Theme -->
             <div>
               <div class="text-sm font-medium mb-2">Theme</div>
               <div class="flex gap-3">
@@ -102,16 +50,13 @@
               </div>
             </div>
 
-            <!-- Font controls -->
             <div>
               <div class="flex items-center justify-between">
                 <div>
                   <div class="text-sm font-medium">Typography</div>
                   <div class="text-xs text-slate-500">Size & font family</div>
                 </div>
-                <div>
-                  <span class="text-xs text-slate-400">Global</span>
-                </div>
+                <div><span class="text-xs text-slate-400">Global</span></div>
               </div>
 
               <div class="mt-3 grid grid-cols-2 gap-2">
@@ -129,7 +74,6 @@
             </div>
           </div>
 
-          <!-- live preview -->
           <div class="mt-4 border border-dashed rounded-lg p-3 bg-slate-50">
             <div id="previewBox" class="p-3 rounded">
               <div class="flex items-center gap-3">
@@ -157,7 +101,7 @@
           <div class="mt-4 flex flex-col sm:flex-row gap-3">
             <button id="exportAllCsv" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 text-white">Export CSV</button>
             <button id="exportAllPdf" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 text-white">Export PDF</button>
-            <button id="clearAll" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white">Clear All</button>
+            <button id="clearAll" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-rose-600 text-white">Clear All</button>
             <button id="downloadBackup" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-amber-500 text-slate-900">Download Backup</button>
           </div>
 
@@ -186,19 +130,19 @@
           </div>
         </section>
 
-        <!-- Logout -->
         <div class="flex justify-end">
-          <button id="logoutBtn" class="px-4 py-2 rounded-lg bg-slate-100">Logout</button>
+          <button id="goToAccount" class="px-4 py-2 rounded bg-slate-100">Open My Account</button>
         </div>
+
       </div>
 
-      <!-- right column: condensed summary & danger actions -->
+      <!-- right column -->
       <aside class="space-y-4">
         <div class="bg-white rounded-2xl p-4 shadow card-appear">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="font-semibold">Account</h3>
-              <p class="text-xs text-slate-500">Local login</p>
+              <p class="text-xs text-slate-500">Edit credentials in My Account</p>
             </div>
             <img src="favicon.png" class="h-8 w-8" alt="logo">
           </div>
@@ -220,7 +164,7 @@
         <div class="bg-white rounded-2xl p-4 shadow card-appear">
           <h3 class="font-semibold">Danger Zone</h3>
           <p class="text-xs text-slate-500 mt-1">Irreversible actions</p>
-          <div class="mt-3 flex gap-2">
+          <div class="mt-3">
             <button id="btnDangerClearAll" class="w-full px-3 py-2 rounded bg-rose-600 text-white">Clear All Data</button>
           </div>
         </div>
@@ -228,19 +172,6 @@
     </div>
   </div>
 
-  <!-- Confirm modal -->
-  <div id="confirmModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 z-50">
-    <div class="bg-white rounded-lg p-4 w-11/12 max-w-md shadow">
-      <h4 class="font-semibold">Confirm action</h4>
-      <p id="confirmText" class="text-sm text-slate-600 mt-2">Are you sure?</p>
-      <div class="mt-4 flex justify-end gap-2">
-        <button id="confirmCancel" class="px-4 py-2 rounded bg-slate-100">Cancel</button>
-        <button id="confirmOk" class="px-4 py-2 rounded bg-rose-600 text-white">Yes, continue</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
   <footer class="fixed bottom-4 left-1/2 -translate-x-1/2">
     <div class="bg-white p-2 rounded-full shadow text-xs flex items-center gap-2">
       <img src="favicon.png" class="h-4 w-4" alt="FinAssist">
@@ -248,181 +179,95 @@
     </div>
   </footer>
 
-  <!-- scripts -->
   <script src="app.js"></script>
   <script>
-    // require login
-    if(localStorage.getItem('tfm_logged_in') !== 'true') location.href = 'index.html';
+    if(localStorage.getItem('tfm_logged_in') !== 'true') location.href='index.html';
 
-    // Helpers
+    // Read settings helper
     const $ = id => document.getElementById(id);
     function readSettings(){ return JSON.parse(localStorage.getItem('tfm_settings') || '{"theme":"light","fontSize":"medium","fontFamily":"Inter"}'); }
-    function writeSettings(s){ localStorage.setItem('tfm_settings', JSON.stringify(s)); window.dispatchEvent(new Event('storage')); } // storage event not fired programmatically across tabs but app.js listens on load too
+    function writeSettings(s){ localStorage.setItem('tfm_settings', JSON.stringify(s)); window.dispatchEvent(new Event('storage')); }
 
-    // init UI elements
-    const settings = readSettings();
-    // credentials fields
-    const creds = JSON.parse(localStorage.getItem('tfm_credentials')||'{}');
-    $('setUsername').value = creds.username || '';
-    $('setPassword').value = creds.password || '';
-
-    // show summary
-    function updateSummary(){
-      const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
-      const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
-      $('showCounts').textContent = `${incomes.length} incomes / ${expenses.length} expenses`;
-      $('showUser').textContent = (creds.username) ? creds.username : '—';
-    }
-    updateSummary();
-
-    // theme preview logic
+    // apply local preview
     function applyLocalPreview(){
       const s = readSettings();
-      // set radio visuals
-      document.querySelectorAll('[name="theme"]').forEach(r=>{
-        if(r.value === s.theme) r.checked = true;
-      });
+      // radio selection visual
+      document.querySelectorAll('[name="theme"]').forEach(r=> r.checked = (r.value === s.theme));
       $('fontSize').value = s.fontSize || 'medium';
       $('fontFamily').value = s.fontFamily || 'Inter';
-
-      // preview area adjustments
+      // preview adjustment
       const preview = $('previewBox');
       preview.style.fontFamily = s.fontFamily;
-      if(s.fontSize === 'small') preview.style.fontSize = '14px';
-      else if(s.fontSize === 'large') preview.style.fontSize = '18px';
-      else preview.style.fontSize = '16px';
-
-      // add/remove class for theme: app.js uses html.tfm-dark + runtime styles,
-      // but we add tfm-dark locally so the preview reflects change.
-      if(s.theme === 'dark') document.documentElement.classList.add('tfm-dark');
-      else document.documentElement.classList.remove('tfm-dark');
+      preview.style.fontSize = s.fontSize === 'small' ? '14px' : s.fontSize === 'large' ? '18px' : '16px';
+      if(s.theme === 'dark') document.documentElement.classList.add('tfm-dark'); else document.documentElement.classList.remove('tfm-dark');
     }
 
     applyLocalPreview();
 
-    // handle credential form
-    $('credForm').addEventListener('submit', function(e){
-      e.preventDefault();
-      const u = $('setUsername').value.trim();
-      const p = $('setPassword').value;
-      if(!u || !p) return alert('Provide username and password.');
-      localStorage.setItem('tfm_credentials', JSON.stringify({username:u, password:p}));
-      // show saved quick thumb
-      $('credSaved').classList.remove('hidden');
-      setTimeout(()=> $('credSaved').classList.add('hidden'), 2200);
-    });
+    // theme selectors
+    document.querySelectorAll('[name="theme"]').forEach(r => r.addEventListener('change', function(){
+      const s = readSettings(); s.theme = this.value; writeSettings(s); applyLocalPreview();
+    }));
+    document.getElementById('themeLight').addEventListener('click', ()=>{ document.querySelector('[name="theme"][value="light"]').checked = true; const s = readSettings(); s.theme='light'; writeSettings(s); applyLocalPreview(); });
+    document.getElementById('themeDark').addEventListener('click', ()=>{ document.querySelector('[name="theme"][value="dark"]').checked = true; const s = readSettings(); s.theme='dark'; writeSettings(s); applyLocalPreview(); });
 
-    $('resetCredBtn').addEventListener('click', ()=>{
-      if(!confirm('Reset to default credentials?')) return;
-      localStorage.setItem('tfm_credentials', JSON.stringify({username:'9526220564', password:'Thaju@1992'}));
-      $('setUsername').value = '9526220564';
-      $('setPassword').value = 'Thaju@1992';
-      updateSummary();
-      alert('Credentials reset to defaults.');
-    });
-
-    // theme controls
-    document.querySelectorAll('[name="theme"]').forEach(el=>{
-      el.addEventListener('change', function(){
-        const s = readSettings(); s.theme = this.value; writeSettings(s); applyLocalPreview();
-      });
-    });
-
-    // clickable theme cards give change
-    document.getElementById('themeLight').addEventListener('click', ()=>{
-      document.querySelector('[name="theme"][value="light"]').checked = true;
-      const s = readSettings(); s.theme = 'light'; writeSettings(s); applyLocalPreview();
-    });
-    document.getElementById('themeDark').addEventListener('click', ()=>{
-      document.querySelector('[name="theme"][value="dark"]').checked = true;
-      const s = readSettings(); s.theme = 'dark'; writeSettings(s); applyLocalPreview();
-    });
-
-    // font selectors
     $('fontSize').addEventListener('change', function(){ const s = readSettings(); s.fontSize = this.value; writeSettings(s); applyLocalPreview(); });
     $('fontFamily').addEventListener('change', function(){ const s = readSettings(); s.fontFamily = this.value; writeSettings(s); applyLocalPreview(); });
 
-    // Exports & downloads
-    function downloadCSV(arr, filename, header){
-      if(!arr || arr.length === 0){ alert(filename + ' — no data'); return; }
-      const csv = [header.join(',')].concat(arr.map(r=> header.map(h=> `"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
-    }
+    // data actions
+    $('exportAllCsv').addEventListener('click', function(){
+      const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
+      const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
+      window.downloadArrayAsCsv(incomes, 'incomes.csv', Object.keys(incomes[0]||{}).length?Object.keys(incomes[0]):['id','date','name','amount']);
+      window.downloadArrayAsCsv(expenses, 'expenses.csv', Object.keys(expenses[0]||{}).length?Object.keys(expenses[0]):['id','date','name','amount']);
+    });
+    $('exportAllPdf').addEventListener('click', function(){ window.exportListAsPDF('tfm_incomes','incomes.pdf'); window.exportListAsPDF('tfm_expenses','expenses.pdf'); });
 
-    $('exportAllCsv').addEventListener('click', ()=> {
-      const inc = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
-      const exp = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
-      downloadCSV(inc, 'incomes.csv', ['id','date','purpose','name','phone','amount','lastDate','createdAt']);
-      downloadCSV(exp, 'expenses.csv', ['id','date','purpose','name','phone','amount','createdAt']);
+    $('clearAll').addEventListener('click', function(){
+      if(!confirm('Clear all local data (incomes, expenses, contacts, profile)? This cannot be undone.')) return;
+      localStorage.removeItem('tfm_incomes'); localStorage.removeItem('tfm_expenses'); localStorage.removeItem('tfm_contacts'); localStorage.removeItem('tfm_profile');
+      alert('All local data cleared.');
+      location.reload();
     });
 
-    $('exportAllPdf').addEventListener('click', ()=> {
-      exportListAsPDF('tfm_incomes','incomes_all.pdf');
-      exportListAsPDF('tfm_expenses','expenses_all.pdf');
-    });
-
-    // backup JSON download
-    $('downloadBackup').addEventListener('click', ()=>{
-      const payload = {
+    $('downloadBackup').addEventListener('click', function(){
+      const backup = {
         incomes: JSON.parse(localStorage.getItem('tfm_incomes')||'[]'),
         expenses: JSON.parse(localStorage.getItem('tfm_expenses')||'[]'),
         contacts: JSON.parse(localStorage.getItem('tfm_contacts')||'[]'),
-        settings: readSettings(),
-        credentials: JSON.parse(localStorage.getItem('tfm_credentials')||'{}')
+        profile: JSON.parse(localStorage.getItem('tfm_profile')||'{}'),
       };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `finassist-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(a.href);
+      const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'finassist-backup.json'; a.click(); URL.revokeObjectURL(a.href);
     });
 
-    // quick exports & clear contacts
-    $('btnExportCSV').addEventListener('click', ()=> {
-      const inc = JSON.parse(localStorage.getItem('tfm_incomes')||'[]'); downloadCSV(inc, 'incomes.csv', ['id','date','purpose','name','phone','amount','lastDate','createdAt']);
-    });
-    $('btnExportEXP').addEventListener('click', ()=> {
-      const exp = JSON.parse(localStorage.getItem('tfm_expenses')||'[]'); downloadCSV(exp, 'expenses.csv', ['id','date','purpose','name','phone','amount','createdAt']);
-    });
-    $('btnClearContacts').addEventListener('click', ()=> {
-      if(!confirm('Clear all saved contacts?')) return;
-      localStorage.removeItem('tfm_contacts'); alert('Contacts cleared.'); updateSummary();
-    });
+    $('goToAccount').addEventListener('click', ()=> location.href='myaccount.html');
 
-    // clear all with confirm modal
-    const confirmModal = $('confirmModal'), confirmText = $('confirmText'), confirmOk = $('confirmOk'), confirmCancel = $('confirmCancel');
-    function openConfirm(text, okCb){
-      confirmText.textContent = text;
-      confirmModal.classList.remove('hidden');
-      confirmOk.onclick = ()=> { confirmModal.classList.add('hidden'); okCb(); };
-      confirmCancel.onclick = ()=> confirmModal.classList.add('hidden');
+    // show user summary
+    function updateSummary(){
+      const creds = JSON.parse(localStorage.getItem('tfm_credentials')||'{}');
+      const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
+      const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
+      $('showUser').textContent = creds.username || '—';
+      $('showCounts').textContent = `${incomes.length} incomes / ${expenses.length} expenses`;
     }
-    $('clearAll').addEventListener('click', ()=> {
-      openConfirm('Erase ALL incomes, expenses, contacts and settings? This cannot be undone.', ()=>{
-        localStorage.removeItem('tfm_incomes'); localStorage.removeItem('tfm_expenses'); localStorage.removeItem('tfm_contacts'); localStorage.removeItem('tfm_settings');
-        alert('All data cleared.');
-        applyLocalPreview();
-        updateSummary();
-      });
-    });
-    $('btnDangerClearAll').addEventListener('click', ()=> $('clearAll').click());
+    updateSummary();
 
-    // logout
-    $('logoutBtn').addEventListener('click', ()=>{
-      localStorage.removeItem('tfm_logged_in');
-      location.href = 'index.html';
+    // clear contacts
+    $('btnClearContacts').addEventListener('click', function(){
+      if(!confirm('Clear all contacts?')) return;
+      localStorage.removeItem('tfm_contacts');
+      alert('Contacts cleared.');
     });
 
-    // storage listener: update UI when settings changed elsewhere
-    window.addEventListener('storage', (e) => {
-      if(e.key === 'tfm_settings') {
-        applyLocalPreview();
-      }
+    // dangerous clear all
+    $('btnDangerClearAll').addEventListener('click', function(){
+      if(!confirm('This will remove ALL app data. Are you sure?')) return;
+      localStorage.clear();
+      alert('LocalStorage cleared.');
+      location.reload();
     });
 
-    // small visual init
-    setTimeout(()=> document.querySelectorAll('.card-appear').forEach((el,i)=> el.style.animationDelay = (i*60)+'ms'), 40);
-
-    // re-run counts occasionally
-    setInterval(updateSummary, 2000);
   </script>
 </body>
 </html>

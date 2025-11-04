@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FinAssist — Personal Finance, Simplified</title>
+  <meta name="description" content="FinAssist helps you track incomes, expenses and contacts in a private, lightweight app. Powerful features, export, and a Pro tier for advanced analytics and backups.">
+  <meta property="og:title" content="FinAssist — Personal Finance, Simplified">
+  <meta property="og:description" content="Track incomes & expenses, manage contacts, get insights. FinAssist — your intelligent finance companion.">
+  <meta property="og:image" content="logo.png">
+  <meta property="og:url" content="https://www.finassist.space">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0b6b58">
+
+  <!-- Branding -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    html{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    :root{
+      --accent:#0b6b58;
+      --accent-2:#f59e0b;
+      --muted:#64748b;
+    }
+
+    /* reusable */
+    .fade-in { opacity:0; transform: translateY(12px); transition:all .6s cubic-bezier(.2,.9,.2,1); }
+    .fade-in.show { opacity:1; transform:none; }
+
+    .btn-primary { background: linear-gradient(90deg,var(--accent-2), #f97316); color:#082129; box-shadow: 0 10px 30px rgba(249,115,22,0.14); }
+    .glass { background: linear-gradient( rgba(255,255,255,0.6), rgba(255,255,255,0.4) ); backdrop-filter: blur(6px); }
+
+    .hero-logo{height:72px}
+    @media (max-width:640px){ .hero-logo{height:48px} }
+
+    /* timeline */
+    .timeline { border-left: 3px solid rgba(15,23,42,0.06); padding-left:1rem; }
+
+    /* simple shadow for cards */
+    .card { box-shadow: 0 8px 28px rgba(2,6,23,0.06); border-radius:14px; }
+  </style>
+</head>
+<body class="bg-white text-slate-800 antialiased leading-relaxed">
+
+  <!-- NAV -->
+  <nav class="fixed top-4 left-0 right-0 z-50 px-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 bg-white/70 glass p-2 rounded-full">
+      <a href="#" class="flex items-center gap-3">
+        <img src="logo.png" alt="FinAssist" class="hero-logo">
+        <div class="hidden sm:block">
+          <div class="font-bold text-slate-800">FinAssist</div>
+          <div class="text-xs text-slate-500">Personal Finance, Simplified</div>
+        </div>
+      </a>
+
+      <div class="hidden md:flex items-center gap-3">
+        <a href="#features" class="text-sm px-3 py-2 hover:bg-slate-50 rounded">Features</a>
+        <a href="#usecases" class="text-sm px-3 py-2 hover:bg-slate-50 rounded">Use Cases</a>
+        <a href="#pricing" class="text-sm px-3 py-2 hover:bg-slate-50 rounded">Pricing</a>
+        <a href="#pro" class="text-sm px-3 py-2 hover:bg-slate-50 rounded">Pro</a>
+        <a href="#contact" class="btn-primary px-4 py-2 rounded-full font-semibold">Get Started</a>
+      </div>
+
+      <div class="md:hidden">
+        <a href="index.html" class="px-3 py-2 bg-amber-400 rounded-full shadow text-slate-900 text-sm">Open App</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="pt-28 pb-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div>
+          <span class="inline-flex items-center gap-2 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-medium">Trusted • Private • Lightweight</span>
+
+          <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold leading-tight">
+            FinAssist — <span class="text-emerald-700">Smart</span> money tracking, built for people who act.
+          </h1>
+
+          <p class="mt-4 text-slate-600 max-w-xl">
+            Record incomes and expenses, manage contacts, get clear summaries — all stored locally so your data stays with you. Clean UI, fast workflows, and exports when you need them.
+          </p>
+
+          <div class="mt-6 flex flex-wrap gap-3 items-center">
+            <a href="index.html" class="btn-primary inline-flex items-center gap-3 px-5 py-3 rounded-full text-sm font-semibold shadow">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 8v8m4-4H8"/></svg>
+              Start Free — Open App
+            </a>
+
+            <a href="#pro" class="inline-flex items-center gap-2 px-4 py-3 rounded-full text-sm border hover:shadow">Notify me about Pro</a>
+          </div>
+
+          <div class="mt-6 flex flex-wrap gap-3 text-xs text-slate-500">
+            <div class="px-3 py-1 bg-slate-50 rounded-full">No signup required</div>
+            <div class="px-3 py-1 bg-slate-50 rounded-full">Works offline</div>
+            <div class="px-3 py-1 bg-slate-50 rounded-full">Mobile-first UX</div>
+          </div>
+
+          <!-- trust row -->
+          <div class="mt-6 flex items-center gap-4">
+            <div class="text-xs text-slate-500">Used by</div>
+            <div class="flex items-center gap-3 text-sm text-slate-600">
+              <div class="px-3 py-1 bg-slate-100 rounded">Merchants</div>
+              <div class="px-3 py-1 bg-slate-100 rounded">Freelancers</div>
+              <div class="px-3 py-1 bg-slate-100 rounded">Households</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- visual card: quick stats + screenshot -->
+        <div class="relative">
+          <div class="card bg-gradient-to-br from-white to-slate-50 p-5 rounded-2xl">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs text-slate-500">Welcome back,</div>
+                <div class="text-lg font-semibold">Thajudheen</div>
+              </div>
+              <div class="text-xs text-slate-500">Local • Offline</div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-4">
+              <div class="p-3 rounded-lg bg-white border">
+                <div class="text-xs text-slate-500">Total Income</div>
+                <div class="text-xl font-bold">₹ 42,880</div>
+              </div>
+              <div class="p-3 rounded-lg bg-white border">
+                <div class="text-xs text-slate-500">Total Expense</div>
+                <div class="text-xl font-bold">₹ 18,360</div>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <img src="logo.png" alt="finassist mock" class="w-full h-52 object-cover rounded-md" />
+            </div>
+
+            <div class="mt-4 flex gap-2">
+              <a class="px-3 py-2 rounded-md bg-emerald-600 text-white text-sm">Add Expense</a>
+              <a class="px-3 py-2 rounded-md bg-slate-100 text-sm">View by Name</a>
+            </div>
+          </div>
+
+          <div class="mt-4 text-xs text-slate-500">Mockup: in-app dashboard preview</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- FEATURES DEEP DIVE -->
+  <section id="features" class="py-12 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold">All the features you need — nothing you don't</h2>
+        <p class="mt-2 text-slate-600 max-w-2xl mx-auto">Designed for speed, clarity, and low friction. Workflows for regular people and small businesses.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="space-y-4">
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-amber-50 text-amber-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="1.6" d="M3 10h4l3-7 4 14 3-8h4"/></svg></div>
+              <div>
+                <div class="font-semibold">Quick Entries</div>
+                <div class="text-xs text-slate-500">Fast form to capture date, purpose, name, phone, and amount.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-emerald-50 text-emerald-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="1.6" d="M12 8v8m4-4H8"/></svg></div>
+              <div>
+                <div class="font-semibold">Contact-aware forms</div>
+                <div class="text-xs text-slate-500">Auto-suggest names and save phone numbers for faster future entries.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-sky-50 text-sky-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"><path d="M3 12h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+              <div>
+                <div class="font-semibold">Per-person summaries</div>
+                <div class="text-xs text-slate-500">See totals by name; share a snapshot or export per-contact report.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-indigo-50 text-indigo-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"><path d="M3 7h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+              <div>
+                <div class="font-semibold">Export CSV & PDF</div>
+                <div class="text-xs text-slate-500">Quick exports for bookkeeping and sharing. Pro expands templates and scheduling.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-rose-50 text-rose-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"><path d="M3 12h6" stroke="currentColor" stroke-width="1.6"/></svg></div>
+              <div>
+                <div class="font-semibold">Return pending</div>
+                <div class="text-xs text-slate-500">Track incomes with due dates and get a simple list of past-due items.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-slate-100 text-slate-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"><path d="M12 20h9" stroke="currentColor" stroke-width="1.6"/></svg></div>
+              <div>
+                <div class="font-semibold">Lightweight & fast</div>
+                <div class="text-xs text-slate-500">No heavy frameworks on the client. Optimized for low-data devices.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-emerald-50 text-emerald-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"><path d="M3 12h6" stroke="currentColor" stroke-width="1.6"/></svg></div>
+              <div>
+                <div class="font-semibold">Theme & view</div>
+                <div class="text-xs text-slate-500">Dark mode, font size, and family choices for comfortable long use.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-amber-50 text-amber-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"><path d="M3 12h18" stroke="currentColor" stroke-width="1.6"/></svg></div>
+              <div>
+                <div class="font-semibold">Safe defaults</div>
+                <div class="text-xs text-slate-500">Data export and clear actions always require explicit confirmation.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-sky-50 text-sky-700"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"><path d="M3 12h18" stroke="currentColor" stroke-width="1.6"/></svg></div>
+              <div>
+                <div class="font-semibold">Shareable cards</div>
+                <div class="text-xs text-slate-500">Create image snapshots of per-person cards (html2canvas integration).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section id="usecases" class="py-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold">Who benefits from FinAssist?</h2>
+        <p class="mt-2 text-slate-600">Simple, everyday workflows for many users — from homemakers to shopkeepers.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <article class="p-5 bg-white rounded-2xl card">
+          <div class="font-semibold">Small Retailers</div>
+          <p class="mt-2 text-sm text-slate-600">Track daily sales, customer advances, and supplier payments. Export monthly CSV for bookkeeping.</p>
+        </article>
+
+        <article class="p-5 bg-white rounded-2xl card">
+          <div class="font-semibold">Freelancers & Gig Workers</div>
+          <p class="mt-2 text-sm text-slate-600">Record client deposits, track invoices and due returns, and get periodic summaries.</p>
+        </article>
+
+        <article class="p-5 bg-white rounded-2xl card">
+          <div class="font-semibold">Families & Households</div>
+          <p class="mt-2 text-sm text-slate-600">Log expenses, share summary cards with family members, and keep an eye on net savings.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOCKUPS / GALLERY -->
+  <section class="py-12 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold">Screenshots & quick views</h2>
+        <p class="mt-2 text-slate-600">Preview in-app pages and cards (mockups).</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="rounded-2xl overflow-hidden card">
+          <img src="logo.png" alt="mock1" class="w-full h-56 object-cover">
+        </div>
+        <div class="rounded-2xl overflow-hidden card">
+          <img src="logo.png" alt="mock2" class="w-full h-56 object-cover">
+        </div>
+        <div class="rounded-2xl overflow-hidden card">
+          <img src="logo.png" alt="mock3" class="w-full h-56 object-cover">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRO / COMPARISON -->
+  <section id="pro" class="py-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+        <div>
+          <h2 class="text-2xl font-bold">FinAssist vs FinAssist Pro</h2>
+          <p class="mt-2 text-slate-600">Free edition covers the essentials. Pro is for professionals and microbusinesses that need automation and backups.</p>
+
+          <table class="mt-6 w-full text-sm table-fixed border-collapse">
+            <thead><tr class="text-left text-xs text-slate-500"><th class="py-2">Feature</th><th class="py-2">Free</th><th class="py-2">Pro</th></tr></thead>
+            <tbody class="text-slate-700">
+              <tr class="border-y"><td class="py-3">Local storage</td><td class="py-3">Yes</td><td class="py-3">Yes + optional cloud backup</td></tr>
+              <tr class="border-y"><td class="py-3">CSV / PDF export</td><td class="py-3">Basic</td><td class="py-3">Advanced templates</td></tr>
+              <tr class="border-y"><td class="py-3">Analytics</td><td class="py-3">Summary cards</td><td class="py-3">Trend charts & forecasts</td></tr>
+              <tr class="border-y"><td class="py-3">Priority support</td><td class="py-3">Community</td><td class="py-3">Yes</td></tr>
+              <tr class="border-y"><td class="py-3">Encrypted backups</td><td class="py-3">No</td><td class="py-3">Yes (opt-in)</td></tr>
+            </tbody>
+          </table>
+
+          <div class="mt-6 flex gap-3">
+            <a href="#pricing" class="btn-primary px-4 py-3 rounded-full font-semibold">Choose Plan</a>
+            <a href="#contact" class="px-4 py-3 rounded-full border">Request Pro Beta</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="p-5 bg-white rounded-2xl card">
+            <div class="text-sm text-slate-500">Pro quick preview</div>
+            <div class="mt-2 text-lg font-bold">Encrypted backups • Scheduled reports • Templates</div>
+            <ul class="mt-3 text-sm text-slate-600 space-y-1">
+              <li>Automatic encrypted backup to your cloud account (optional)</li>
+              <li>Export templates for GST / Tax reports</li>
+              <li>Recurring scheduled exports</li>
+              <li>Powerful filters & CSV column mapping</li>
+            </ul>
+
+            <div class="mt-4">
+              <a class="px-4 py-2 rounded-full bg-amber-100 border">Join Pro waitlist</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="py-12 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold">Roadmap</h2>
+        <p class="mt-2 text-slate-600">Planned features and rollout timeline.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-4 bg-white rounded-2xl card timeline">
+          <div class="text-sm font-semibold">Q2 2025 — Stabilize</div>
+          <div class="text-xs text-slate-500 mt-1">Bug fixes, performance, improved export options</div>
+        </div>
+        <div class="p-4 bg-white rounded-2xl card timeline">
+          <div class="text-sm font-semibold">Q3 2025 — Pro Beta</div>
+          <div class="text-xs text-slate-500 mt-1">Encrypted backups, analytics beta, templates</div>
+        </div>
+        <div class="p-4 bg-white rounded-2xl card timeline">
+          <div class="text-sm font-semibold">Q4 2025 — Pro Public Launch</div>
+          <div class="text-xs text-slate-500 mt-1">Full Pro release, pricing tiers, priority support</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="py-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold">Trusted by users across India</h2>
+        <p class="mt-2 text-slate-600">Stories from merchants, freelancers, and homemakers</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-5 bg-white rounded-2xl card">
+          <p class="text-slate-600">"FinAssist replaced my paper notebook — entries are easier and I can send summaries to customers."</p>
+          <div class="mt-3 text-xs text-slate-500">— Abdul, Grocery Shop Owner</div>
+        </div>
+        <div class="p-5 bg-white rounded-2xl card">
+          <p class="text-slate-600">"The contact feature saved me time: now phone numbers auto-fill and I don't repeat typing."</p>
+          <div class="mt-3 text-xs text-slate-500">— Neha, Freelance Tutor</div>
+        </div>
+        <div class="p-5 bg-white rounded-2xl card">
+          <p class="text-slate-600">"I like that it stays on my phone — privacy is important for my business records."</p>
+          <div class="mt-3 text-xs text-slate-500">— Suresh, Tailor</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ (expanded) -->
+  <section class="py-12 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <h2 class="text-2xl font-bold text-center">Frequently Asked Questions</h2>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <details class="p-4 bg-white rounded-2xl card"><summary class="font-semibold">Where is my data stored?</summary><div class="mt-2 text-sm text-slate-600">By default your data is stored locally in your browser's localStorage. It stays on the device unless you export or opt into Pro backups.</div></details>
+
+        <details class="p-4 bg-white rounded-2xl card"><summary class="font-semibold">Can I backup or transfer data?</summary><div class="mt-2 text-sm text-slate-600">You can export CSV/PDF files or download a JSON backup. Pro will add encrypted cloud backups and restores.</div></details>
+
+        <details class="p-4 bg-white rounded-2xl card"><summary class="font-semibold">Is the app free?</summary><div class="mt-2 text-sm text-slate-600">FinAssist core is free. FinAssist Pro will be a paid tier with advanced capabilities. Free users keep essential functionality.</div></details>
+
+        <details class="p-4 bg-white rounded-2xl card"><summary class="font-semibold">Will there be an Android/iOS app?</summary><div class="mt-2 text-sm text-slate-600">FinAssist is a PWA-ready web app — installable on mobile home screens. We may release native wrappers later for Pro users.</div></details>
+
+        <details class="p-4 bg-white rounded-2xl card"><summary class="font-semibold">How secure is Pro backup?</summary><div class="mt-2 text-sm text-slate-600">Pro backups will be encrypted client-side. Only you hold the decryption key; backups are optional and reversible.</div></details>
+
+        <details class="p-4 bg-white rounded-2xl card"><summary class="font-semibold">How do I get help?</summary><div class="mt-2 text-sm text-slate-600">Contact via WhatsApp: <a class="text-amber-600" href="https://wa.me/7994531823?text=FinAssist%20Support" target="_blank">+91 79945 31823</a> or use the contact form below.</div></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" class="py-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <h2 class="text-2xl font-bold">Pricing</h2>
+      <p class="mt-2 text-slate-600">Transparent options: free core features and a future Pro tier for power users.</p>
+
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 bg-white rounded-2xl card">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-semibold">Starter</h3>
+              <div class="text-xs text-slate-500">For daily personal use</div>
+            </div>
+            <div class="text-2xl font-bold">Free</div>
+          </div>
+          <ul class="mt-4 text-sm text-slate-600 space-y-2">
+            <li>Unlimited incomes & expenses</li>
+            <li>Per-person cards & sharing</li>
+            <li>Basic exports (CSV/PDF)</li>
+            <li>Theme & settings</li>
+          </ul>
+          <div class="mt-6">
+            <a href="index.html" class="px-4 py-2 btn-primary rounded-full text-sm font-semibold">Start Free</a>
+          </div>
+        </div>
+
+        <div class="p-6 bg-white rounded-2xl card border-2 border-amber-100">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-semibold">Pro (Early)</h3>
+              <div class="text-xs text-slate-500">For pro users & small businesses</div>
+            </div>
+            <div class="text-2xl font-bold">₹ TBD</div>
+          </div>
+          <ul class="mt-4 text-sm text-slate-600 space-y-2">
+            <li>Encrypted backups & restore</li>
+            <li>Advanced analytics & scheduled reports</li>
+            <li>Custom export templates</li>
+            <li>Priority support & onboarding</li>
+          </ul>
+          <div class="mt-6">
+            <a href="#contact" class="px-4 py-2 rounded-full border text-sm">Request Early Access</a>
+          </div>
+        </div>
+
+        <div class="p-6 bg-white rounded-2xl card">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-semibold">Enterprise</h3>
+              <div class="text-xs text-slate-500">Custom solutions</div>
+            </div>
+            <div class="text-2xl font-bold">Contact</div>
+          </div>
+          <ul class="mt-4 text-sm text-slate-600 space-y-2">
+            <li>Custom integrations</li>
+            <li>Bulk migration & templates</li>
+            <li>Dedicated support</li>
+          </ul>
+          <div class="mt-6">
+            <a href="https://wa.me/7994531823?text=FinAssist%20Enterprise" class="px-4 py-2 rounded-full bg-slate-100 text-sm">Contact Sales</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM / CREDIBILITY -->
+  <section class="py-12 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <h2 class="text-2xl font-bold">About the team</h2>
+      <p class="mt-2 text-slate-600">A small, focused team building tools for everyday people.</p>
+
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="p-4 bg-white rounded-2xl card">
+          <div class="font-semibold">Basith Paravoor</div>
+          <div class="text-xs text-slate-500 mt-1">Founder — product & strategy</div>
+        </div>
+        <div class="p-4 bg-white rounded-2xl card">
+          <div class="font-semibold">Product & UX</div>
+          <div class="text-xs text-slate-500 mt-1">Designers focused on clarity</div>
+        </div>
+        <div class="p-4 bg-white rounded-2xl card">
+          <div class="font-semibold">Engineering</div>
+          <div class="text-xs text-slate-500 mt-1">Front-end & product engineers</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT / NEWSLETTER -->
+  <section id="contact" class="py-12">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold">Stay updated</h2>
+        <p class="mt-2 text-slate-600">Sign up for product updates, Pro early access and launch announcements.</p>
+      </div>
+
+      <form id="contactForm" class="flex flex-col sm:flex-row gap-3 items-center justify-center">
+        <input id="emailInput" type="text" required placeholder="Email or WhatsApp number" class="p-3 rounded-lg border w-full sm:w-2/3" />
+        <button type="submit" class="btn-primary px-5 py-3 rounded-lg text-sm font-semibold">Notify Me</button>
+      </form>
+
+      <div class="mt-4 text-center text-sm text-slate-500">Prefer WhatsApp? <a class="text-amber-600" href="https://wa.me/7994531823?text=FinAssist%20Inquiry" target="_blank">Message us</a></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-8">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="favicon.png" class="h-10 w-10" alt="FinAssist">
+        <div>
+          <div class="font-semibold">FinAssist</div>
+          <div class="text-xs text-slate-500">Personal finance, simplified</div>
+        </div>
+      </div>
+
+      <div class="text-sm text-slate-500">© <span id="year"></span> Basith Paravoor — <a class="text-amber-600" href="https://wa.me/7994531823?text=Expense%20Tracker" target="_blank">Contact</a></div>
+    </div>
+  </footer>
+
+  <!-- lightweight JS -->
+  <script>
+    // reveal animations for elements with .fade-in or .reveal
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(()=> {
+        document.querySelectorAll('.reveal, .fade-in').forEach((el, i) => setTimeout(()=> el.classList.add('show'), i*80));
+      }, 100);
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // newsletter / early access: local storage list
+      const form = document.getElementById('contactForm');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const v = document.getElementById('emailInput').value.trim();
+        if(!v) return alert('Please enter email or WhatsApp number');
+        const list = JSON.parse(localStorage.getItem('finassist_interest') || '[]');
+        list.push({value:v, at:new Date().toISOString()});
+        localStorage.setItem('finassist_interest', JSON.stringify(list));
+        alert('Thanks — you are added to the FinAssist updates list. We will notify you about Pro and launches.');
+        form.reset();
+      });
+
+      // keyboard shortcut: press "o" to open the app (dev convenience)
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'o' && !e.metaKey && !e.ctrlKey) {
+          window.location.href = 'index.html';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

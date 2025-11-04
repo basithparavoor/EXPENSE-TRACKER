@@ -1,9 +1,5 @@
-// app.js — Shared utilities (updated)
-// - Applies settings (theme, font size, family) globally on every page load
-// - Injects a runtime dark-mode CSS override so Tailwind static classes are readable
-// - Robust jsPDF loader + PDF/CSV fallbacks
-// - refreshNamesDatalist (safe)
-// - listens to storage events to live-update settings
+// app.js — Shared utilities & profile support for FinAssist
+// Replace your existing app.js with this file.
 
 (function(){
   ////////////////////////
@@ -46,7 +42,6 @@
 
   // Add or update runtime CSS for dark mode so static Tailwind 'bg-white' etc become dark.
   function applyRuntimeDarkStyles(enable){
-    // remove existing
     let style = document.getElementById(DARK_STYLE_ID);
     if(style) style.remove();
     if(!enable) return;
@@ -54,7 +49,7 @@
     style = document.createElement('style');
     style.id = DARK_STYLE_ID;
     style.textContent = `
-/* Runtime dark overrides for components using static Tailwind classes */
+/* Runtime dark overrides for static tailwind classes used in the simple multi-page app */
 html.tfm-dark, html.tfm-dark body {
   background-color: #071129 !important;
   color: #e6eef8 !important;
@@ -71,12 +66,8 @@ html.tfm-dark input, html.tfm-dark textarea, html.tfm-dark select {
   border-color: rgba(255,255,255,0.06) !important;
 }
 html.tfm-dark input::placeholder, html.tfm-dark textarea::placeholder { color: rgba(230,238,248,0.5) !important; }
-html.tfm-dark .bg-amber-500 { /* keep amber buttons visible */ background-color: #f59e0b !important; color: #081020 !important; }
+html.tfm-dark .bg-amber-500 { background-color: #f59e0b !important; color: #081020 !important; }
 html.tfm-dark footer, html.tfm-dark nav, html.tfm-dark .fixed { background-color: rgba(10,15,25,0.7) !important; color: #cfe6ff !important; }
-html.tfm-dark .bg-green-500 { background-color: #16a34a !important; color: #fff !important; }
-html.tfm-dark .bg-slate-700 { background-color: #0f1724 !important; color: #e6eef8 !important; }
-html.tfm-dark .bg-rose-50 { background-color: rgba(83,20,30,0.12) !important; }
-html.tfm-dark .bg-green-50 { background-color: rgba(3,86,63,0.08) !important; }
 html.tfm-dark .shadow-lg { box-shadow: 0 6px 20px rgba(2,6,23,0.6) !important; }
     `;
     document.head.appendChild(style);
@@ -84,8 +75,6 @@ html.tfm-dark .shadow-lg { box-shadow: 0 6px 20px rgba(2,6,23,0.6) !important; }
 
   function applySettings(){
     const s = getSettings();
-
-    // Theme:
     if(s.theme === 'dark'){
       document.documentElement.classList.add('tfm-dark');
       applyRuntimeDarkStyles(true);
@@ -94,24 +83,66 @@ html.tfm-dark .shadow-lg { box-shadow: 0 6px 20px rgba(2,6,23,0.6) !important; }
       applyRuntimeDarkStyles(false);
     }
 
-    // Font size
     if(s.fontSize === 'small') document.documentElement.style.fontSize = '14px';
     else if(s.fontSize === 'large') document.documentElement.style.fontSize = '18px';
     else document.documentElement.style.fontSize = '16px';
 
-    // Font family
     document.documentElement.style.fontFamily = s.fontFamily || 'Inter';
   }
 
-  // Listen for settings changes in other tabs/windows (storage event)
+  // Listen for settings changes across tabs (storage event)
   window.addEventListener('storage', (ev)=>{
     if(ev.key === 'tfm_settings'){
       try { applySettings(); } catch(e){ console.error(e); }
     }
+    if(ev.key === 'tfm_profile'){
+      try { 
+        // dispatch a custom event so pages may react
+        window.dispatchEvent(new CustomEvent('tfm:profileChanged', {detail: JSON.parse(localStorage.getItem('tfm_profile')||'{}')}));
+      } catch(e){ console.error(e); }
+    }
   });
 
+  // initial apply
+  document.addEventListener('DOMContentLoaded', applySettings);
+
   ////////////////////////
-  // PDF export (robust)
+  // Profile helpers
+  ////////////////////////
+  // profile stored in localStorage key: tfm_profile
+  // shape:
+  // { firstName, lastName, phone, whatsapp, sameAsPhone, email, addresses:[{line1,line2,country,state,city,pincode}], aadhaar, pan, avatarDataUrl }
+
+  window.getProfile = function(){
+    try{
+      return JSON.parse(localStorage.getItem('tfm_profile') || '{}');
+    }catch(e){
+      return {};
+    }
+  };
+
+  window.saveProfile = function(profile){
+    localStorage.setItem('tfm_profile', JSON.stringify(profile || {}));
+    // trigger storage event for same-tab listeners
+    window.dispatchEvent(new CustomEvent('tfm:profileChanged', {detail: profile || {}}));
+    // use localStorage set to trigger storage across tabs
+    try{
+      localStorage.setItem('tfm_profile_last_update', new Date().toISOString());
+    }catch(e){}
+  };
+
+  window.listenForProfileChange = function(cb){
+    if(typeof cb === 'function'){
+      window.addEventListener('tfm:profileChanged', function(e){
+        try{ cb(e.detail || JSON.parse(localStorage.getItem('tfm_profile')||'{}')); }catch(err){ cb({}); }
+      });
+      // also call immediately with current
+      try{ cb(window.getProfile()); }catch(e){ cb({}); }
+    }
+  };
+
+  ////////////////////////
+  // CSV / PDF export (robust)
   ////////////////////////
   window.exportListAsPDF = async function(storageKey, filename){
     const arr = JSON.parse(localStorage.getItem(storageKey)||'[]');
@@ -119,7 +150,6 @@ html.tfm-dark .shadow-lg { box-shadow: 0 6px 20px rgba(2,6,23,0.6) !important; }
 
     const ok = await waitFor(()=> !!(window.jspdf && window.jspdf.jsPDF), 4000);
     if(!ok){
-      // fallback: download JSON / text or CSV
       try {
         const txt = JSON.stringify(arr, null, 2);
         const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
@@ -168,19 +198,16 @@ html.tfm-dark .shadow-lg { box-shadow: 0 6px 20px rgba(2,6,23,0.6) !important; }
     } catch(err){
       console.error('PDF export error:', err);
       alert('PDF export problem — try CSV.');
-      try {
-        const header = Object.keys(arr[0]);
-        const csv = [header.join(',')].concat(arr.map(r=> header.map(h=> `"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
-        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename.replace('.pdf','.csv'); a.click(); URL.revokeObjectURL(a.href);
-      } catch(e){ console.error(e); }
     }
   };
 
   ////////////////////////
-  // Datalist names refresh
+  // Refresh datalist names (used by incomes/expenses pages)
   ////////////////////////
   window.refreshNamesDatalist = function(){
+    const d = document.getElementById('namesList');
+    if(!d) return;
+    d.innerHTML = '';
     const contacts = JSON.parse(localStorage.getItem('tfm_contacts')||'[]');
     const incomes = JSON.parse(localStorage.getItem('tfm_incomes')||'[]');
     const expenses = JSON.parse(localStorage.getItem('tfm_expenses')||'[]');
@@ -188,33 +215,23 @@ html.tfm-dark .shadow-lg { box-shadow: 0 6px 20px rgba(2,6,23,0.6) !important; }
     contacts.forEach(c=> c && c.name && names.add(c.name));
     incomes.forEach(i=> i && i.name && names.add(i.name));
     expenses.forEach(e=> e && e.name && names.add(e.name));
-    const nameList = Array.from(names);
-
-    document.querySelectorAll('datalist#namesList').forEach(d=>{
-      d.innerHTML = '';
-      nameList.forEach(n=> {
-        const opt = document.createElement('option'); opt.value = n; d.appendChild(opt);
-      });
-    });
-
-    document.querySelectorAll('select').forEach(s=>{
-      if(!s.id) return;
-      const idLower = s.id.toLowerCase();
-      if(idLower.includes('filter')){
-        const prev = s.value;
-        s.innerHTML = '<option value="">Filter by Name</option>';
-        nameList.forEach(n => { const o = document.createElement('option'); o.value = n; o.text = n; s.appendChild(o); });
-        s.value = prev || '';
-      }
-    });
+    Array.from(names).forEach(n=> { const opt = document.createElement('option'); opt.value = n; d.appendChild(opt); });
   };
 
-  ////////////////////////
-  // Init on DOMContentLoaded
-  ////////////////////////
-  document.addEventListener('DOMContentLoaded', function(){
-    try { applySettings(); } catch(e){ console.error('applySettings error', e); }
-    try { refreshNamesDatalist(); } catch(e){ /* ignore */ }
-  });
+  // export small helper CSV
+  window.downloadArrayAsCsv = function(arr, filename, header){
+    if(!arr || arr.length === 0){ alert('No data'); return; }
+    const csv = [header.join(',')].concat(arr.map(r=> header.map(h=> `"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(a.href);
+  };
+
+  // Expose applySettings so pages can call immediately (pages may also call applySettings on load)
+  window.applyFinSettings = applySettings;
+
+  // ensure profileChanged event is fired once at load so pages can pick initial profile
+  setTimeout(()=> {
+    try{ window.dispatchEvent(new CustomEvent('tfm:profileChanged', {detail: JSON.parse(localStorage.getItem('tfm_profile')||'{}')})); }catch(e){}
+  }, 200);
 
 })();
